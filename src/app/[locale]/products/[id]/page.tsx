@@ -27,6 +27,7 @@ import {
   Loader2,
   Play,
   X,
+  Edit,
 } from 'lucide-react';
 import type { Locale, SpecMedia } from '@/types';
 
@@ -144,6 +145,12 @@ export default function ProductDetailPage({ params }: Props) {
               {product.peakCode}
             </p>
           </div>
+          <Link href={`/products/${encodeURIComponent(product.peakCode)}/edit`}>
+            <Button variant="ghost" size="sm" className="gap-1">
+              <Edit className="h-4 w-4" />
+              <span className="hidden sm:inline">{t('product.edit')}</span>
+            </Button>
+          </Link>
           <LanguageSwitcher />
         </div>
       </header>

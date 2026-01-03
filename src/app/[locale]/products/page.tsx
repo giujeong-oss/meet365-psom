@@ -50,23 +50,32 @@ export default function ProductsPage() {
     fetchProducts();
   }, [species, storage]);
 
-  // Client-side search filtering
+  // Client-side search filtering with tokenized search
   const filteredProducts = useMemo(() => {
     if (!searchQuery) return products;
 
-    const query = searchQuery.toLowerCase();
+    // Split query into tokens for multi-word search
+    const tokens = searchQuery.toLowerCase().split(/\s+/).filter(Boolean);
+    if (tokens.length === 0) return products;
+
     return products.filter((product) => {
       const searchableText = [
         product.peakCode,
         product.names.ko,
         product.names.th,
         product.names.en,
+        product.names.my,
         product.searchTerms,
+        product.partCode,
+        product.supplierCode,
         ...(product.aliases || []),
       ]
+        .filter(Boolean)
         .join(' ')
         .toLowerCase();
-      return searchableText.includes(query);
+
+      // All tokens must match (AND logic)
+      return tokens.every(token => searchableText.includes(token));
     });
   }, [products, searchQuery]);
 

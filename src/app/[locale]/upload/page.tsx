@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import LanguageSwitcher from '@/components/layout/LanguageSwitcher';
 import { AuthGuard } from '@/components/auth';
-import { ImageUploader, ImagePreview, CategorySelector } from '@/components/media';
+import { ImageUploader, ImagePreview, CategorySelector, TagInput } from '@/components/media';
 import { mockProducts } from '@/lib/mock-data';
 import { uploadFile } from '@/lib/firebase/storage';
 import { addDocument, COLLECTIONS, getBaseCode, serverTimestamp } from '@/lib/firebase/firestore';
@@ -42,6 +42,7 @@ export default function UploadPage() {
 
   const [peakCode, setPeakCode] = useState(initialCode);
   const [category, setCategory] = useState<MediaCategory>('approved');
+  const [tags, setTags] = useState<string[]>([]);
   const [files, setFiles] = useState<SelectedFile[]>([]);
   const [uploading, setUploading] = useState(false);
   const [showProductSearch, setShowProductSearch] = useState(!initialCode);
@@ -118,7 +119,7 @@ export default function UploadPage() {
             capturedAt: serverTimestamp(),
             capturedBy: user.uid,
           },
-          tags: [],
+          tags,
           isApproved: category === 'approved',
           createdBy: user.uid,
         });
@@ -246,6 +247,21 @@ export default function UploadPage() {
           </CardHeader>
           <CardContent>
             <CategorySelector value={category} onChange={setCategory} />
+          </CardContent>
+        </Card>
+
+        {/* Tags for AI Training */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base">Tags (AI)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <TagInput
+              tags={tags}
+              onChange={setTags}
+              placeholder="Add tag for AI training..."
+              disabled={uploading}
+            />
           </CardContent>
         </Card>
 

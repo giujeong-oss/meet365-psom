@@ -1,20 +1,51 @@
 'use client';
 
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Link } from '@/i18n/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
 import ProductForm from '@/components/products/ProductForm';
 import LanguageSwitcher from '@/components/layout/LanguageSwitcher';
 import { AuthGuard } from '@/components/auth';
-import { ArrowLeft, Home, Package, Upload, Settings } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { db } from '@/lib/firebase/config';
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { ArrowLeft, Home, Package, Upload, Settings, Loader2 } from 'lucide-react';
+import type { ProductSpec } from '@/types';
 
 export default function NewProductPage() {
   const t = useTranslations();
+  const router = useRouter();
+  const { user } = useAuth();
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (data: unknown) => {
-    // TODO: Save to Firestore when Firebase is configured
-    // For now, just log and redirect
-    // eslint-disable-next-line no-console
-    console.log('New product data:', data);
+  const handleSubmit = async (data: Partial<ProductSpec>) => {
+    if (!data.peakCode) {
+      setError('Peak 코드는 필수입니다.');
+      return;
+    }
+
+    try {
+      setSaving(true);
+      setError(null);
+
+      const docRef = doc(db, 'productSpecs', data.peakCode);
+      await setDoc(docRef, {
+        ...data,
+        id: data.peakCode,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+        createdBy: user?.email || 'unknown',
+        isActive: true,
+      });
+
+      // 성공 시 제품 상세 페이지로 이동
+      router.push(`/products/${encodeURIComponent(data.peakCode)}`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '저장에 실패했습니다.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -33,7 +64,18 @@ export default function NewProductPage() {
 
       {/* Main Content */}
       <main className="container px-4 py-4">
-        <ProductForm onSubmit={handleSubmit} />
+        {error && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+            {error}
+          </div>
+        )}
+        {saving && (
+          <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 text-sm flex items-center gap-2">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            {t('common.loading')}
+          </div>
+        )}
+        <ProductForm onSubmit={handleSubmit} disabled={saving} />
       </main>
 
       {/* Mobile Bottom Navigation */}

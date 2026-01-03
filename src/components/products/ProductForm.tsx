@@ -23,9 +23,10 @@ import type { ProductSpec, Species, Storage } from '@/types';
 interface ProductFormProps {
   initialData?: ProductSpec;
   onSubmit?: (data: Partial<ProductSpec>) => Promise<void>;
+  disabled?: boolean;
 }
 
-export default function ProductForm({ initialData, onSubmit }: ProductFormProps) {
+export default function ProductForm({ initialData, onSubmit, disabled }: ProductFormProps) {
   const t = useTranslations();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -124,9 +125,10 @@ export default function ProductForm({ initialData, onSubmit }: ProductFormProps)
 
       if (onSubmit) {
         await onSubmit(data);
+        // 부모 컴포넌트에서 라우팅 처리
+      } else {
+        router.push('/products');
       }
-
-      router.push('/products');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
@@ -368,7 +370,7 @@ export default function ProductForm({ initialData, onSubmit }: ProductFormProps)
       )}
 
       {/* Submit */}
-      <Button type="submit" className="w-full" disabled={loading || !parsedCode}>
+      <Button type="submit" className="w-full" disabled={loading || disabled || !parsedCode}>
         {loading ? (
           <>
             <Loader2 className="h-4 w-4 mr-2 animate-spin" />
