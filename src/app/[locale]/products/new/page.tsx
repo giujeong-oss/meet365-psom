@@ -8,7 +8,7 @@ import LanguageSwitcher from '@/components/layout/LanguageSwitcher';
 import { AuthGuard } from '@/components/auth';
 import { useAuth } from '@/contexts/AuthContext';
 import { db } from '@/lib/firebase/config';
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 import { ArrowLeft, Home, Package, Upload, Settings, Loader2 } from 'lucide-react';
 import type { ProductSpec } from '@/types';
 
@@ -30,6 +30,15 @@ export default function NewProductPage() {
       setError(null);
 
       const docRef = doc(db, 'productSpecs', data.peakCode);
+
+      // 중복 체크
+      const existing = await getDoc(docRef);
+      if (existing.exists()) {
+        setError(`이미 등록된 제품 코드입니다: ${data.peakCode}`);
+        setSaving(false);
+        return;
+      }
+
       await setDoc(docRef, {
         ...data,
         id: data.peakCode,
