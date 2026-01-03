@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { Input } from '@/components/ui/input';
@@ -9,18 +9,66 @@ import { SpeciesTab, ProductGrid } from '@/components/products';
 import LanguageSwitcher from '@/components/layout/LanguageSwitcher';
 import { AuthGuard } from '@/components/auth';
 import { mockProducts, filterProducts } from '@/lib/mock-data';
-import { Search, ArrowLeft, Home, Package, Upload, Settings } from 'lucide-react';
-import type { Species, Storage } from '@/types';
+import { getProductSpecs } from '@/lib/firebase/firestore';
+import { Search, ArrowLeft, Home, Package, Upload, Settings, Loader2 } from 'lucide-react';
+import type { Species, Storage, ProductSpec } from '@/types';
 
 export default function ProductsPage() {
   const t = useTranslations();
   const [species, setSpecies] = useState<Species | 'all'>('all');
   const [storage, setStorage] = useState<Storage | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [products, setProducts] = useState<ProductSpec[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [useFirestore, setUseFirestore] = useState(true);
 
+  // Fetch products from Firestore
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        setLoading(true);
+        const speciesFilter = species === 'all' ? undefined : species;
+        const storageFilter = storage === 'all' ? undefined : storage;
+        const firestoreProducts = await getProductSpecs(speciesFilter, storageFilter);
+
+        if (firestoreProducts.length > 0) {
+          setProducts(firestoreProducts);
+          setUseFirestore(true);
+        } else {
+          // Fallback to mock data if Firestore is empty
+          setProducts(mockProducts);
+          setUseFirestore(false);
+        }
+      } catch (error) {
+        // Fallback to mock data on error
+        setProducts(mockProducts);
+        setUseFirestore(false);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchProducts();
+  }, [species, storage]);
+
+  // Client-side search filtering
   const filteredProducts = useMemo(() => {
-    return filterProducts(mockProducts, species, storage, searchQuery);
-  }, [species, storage, searchQuery]);
+    if (!searchQuery) return products;
+
+    const query = searchQuery.toLowerCase();
+    return products.filter((product) => {
+      const searchableText = [
+        product.peakCode,
+        product.names.ko,
+        product.names.th,
+        product.names.en,
+        product.searchTerms,
+        ...(product.aliases || []),
+      ]
+        .join(' ')
+        .toLowerCase();
+      return searchableText.includes(query);
+    });
+  }, [products, searchQuery]);
 
   return (
     <AuthGuard>
@@ -83,12 +131,27 @@ export default function ProductsPage() {
         </div>
 
         {/* Results Count */}
-        <div className="text-sm text-muted-foreground mb-4">
-          {filteredProducts.length} {t('nav.products')}
+        <div className="text-sm text-muted-foreground mb-4 flex items-center gap-2">
+          {loading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <>
+              {filteredProducts.length} {t('nav.products')}
+              {!useFirestore && (
+                <span className="text-xs text-orange-500">(Mock)</span>
+              )}
+            </>
+          )}
         </div>
 
         {/* Product Grid */}
-        <ProductGrid products={filteredProducts} />
+        {loading ? (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          </div>
+        ) : (
+          <ProductGrid products={filteredProducts} />
+        )}
       </main>
 
       {/* Mobile Bottom Navigation */}

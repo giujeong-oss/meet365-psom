@@ -11,7 +11,8 @@ import SpecSheet from '@/components/products/SpecSheet';
 import MediaGallery from '@/components/products/MediaGallery';
 import QualityBadge from '@/components/products/QualityBadge';
 import { getMockProduct } from '@/lib/mock-data';
-import { getSpecMedia } from '@/lib/firebase/firestore';
+import { getSpecMedia, getProductSpec } from '@/lib/firebase/firestore';
+import type { ProductSpec } from '@/types';
 import {
   ArrowLeft,
   Home,
@@ -39,7 +40,8 @@ export default function ProductDetailPage({ params }: Props) {
   const locale = useLocale() as Locale;
 
   const decodedId = decodeURIComponent(id);
-  const product = getMockProduct(decodedId);
+  const [product, setProduct] = useState<ProductSpec | null>(null);
+  const [loadingProduct, setLoadingProduct] = useState(true);
   const [media, setMedia] = useState<SpecMedia[]>([]);
   const [loadingMedia, setLoadingMedia] = useState(true);
   const [showVideo, setShowVideo] = useState(false);
@@ -49,6 +51,32 @@ export default function ProductDetailPage({ params }: Props) {
   const approvedMedia = media.filter((m) => m.category === 'approved' && !m.file.mimeType.startsWith('video/'));
   const processVideos = media.filter((m) => m.type === 'process_video' || m.file.mimeType.startsWith('video/'));
 
+  // Fetch product from Firestore
+  useEffect(() => {
+    async function fetchProduct() {
+      if (!decodedId) return;
+      try {
+        setLoadingProduct(true);
+        const firestoreProduct = await getProductSpec(decodedId);
+        if (firestoreProduct) {
+          setProduct(firestoreProduct);
+        } else {
+          // Fallback to mock data
+          const mockProduct = getMockProduct(decodedId);
+          setProduct(mockProduct || null);
+        }
+      } catch (error) {
+        // Fallback to mock data
+        const mockProduct = getMockProduct(decodedId);
+        setProduct(mockProduct || null);
+      } finally {
+        setLoadingProduct(false);
+      }
+    }
+    fetchProduct();
+  }, [decodedId]);
+
+  // Fetch media
   useEffect(() => {
     async function fetchMedia() {
       if (!decodedId) return;
@@ -68,6 +96,17 @@ export default function ProductDetailPage({ params }: Props) {
   const handleMediaDeleted = useCallback((mediaId: string) => {
     setMedia((prev) => prev.filter((m) => m.id !== mediaId));
   }, []);
+
+  // Loading state
+  if (loadingProduct) {
+    return (
+      <AuthGuard>
+        <div className="min-h-screen bg-background flex items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        </div>
+      </AuthGuard>
+    );
+  }
 
   if (!product) {
     return (
