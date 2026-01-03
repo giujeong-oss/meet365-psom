@@ -85,115 +85,91 @@ export default function TabletProductsPage() {
         {/* Main Content - Split View */}
         <main className="flex h-[calc(100vh-56px)]">
           {/* Left Panel: Filters */}
-          <div className="w-64 border-r bg-muted/30 p-4 overflow-y-auto">
-            {/* Trade Type */}
-            <div className="mb-4">
-              <p className="text-xs font-medium text-muted-foreground mb-2">Trade Type</p>
-              <div className="flex flex-col gap-1.5">
+          <div className="w-72 border-r bg-muted/30 p-3 overflow-y-auto">
+            {/* Trade Type - 2x2 Grid */}
+            <div className="mb-3">
+              <p className="text-sm font-medium text-muted-foreground mb-2">Trade Type</p>
+              <div className="grid grid-cols-2 gap-2">
                 <Button
                   variant={tradeType === '2' ? 'default' : 'outline'}
-                  size="sm"
                   onClick={() => setTradeType('2')}
-                  className={`justify-start ${tradeType === '2' ? 'bg-blue-600 hover:bg-blue-700' : ''}`}
+                  className={`h-16 flex-col gap-1 ${tradeType === '2' ? 'bg-blue-600 hover:bg-blue-700' : ''}`}
                 >
-                  <ShoppingCart className="h-4 w-4 mr-2" />
-                  {t('tradeType.sales')}
+                  <ShoppingCart className="h-6 w-6" />
+                  <span className="text-sm">{t('tradeType.sales')}</span>
                 </Button>
                 <Button
                   variant={tradeType === '1' ? 'default' : 'outline'}
-                  size="sm"
                   onClick={() => setTradeType('1')}
-                  className={`justify-start ${tradeType === '1' ? 'bg-orange-600 hover:bg-orange-700' : ''}`}
+                  className={`h-16 flex-col gap-1 ${tradeType === '1' ? 'bg-orange-600 hover:bg-orange-700' : ''}`}
                 >
-                  <BoxIcon className="h-4 w-4 mr-2" />
-                  {t('tradeType.raw')}
-                </Button>
-                <Button
-                  variant={tradeType === 'all' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setTradeType('all')}
-                  className="justify-start"
-                >
-                  {t('common.all')}
+                  <BoxIcon className="h-6 w-6" />
+                  <span className="text-sm">{t('tradeType.raw')}</span>
                 </Button>
               </div>
             </div>
 
-            {/* Species */}
-            <div className="mb-4">
-              <p className="text-xs font-medium text-muted-foreground mb-2">Species</p>
-              <div className="flex flex-col gap-1.5">
+            {/* Species - 2x2 Grid */}
+            <div className="mb-3">
+              <p className="text-sm font-medium text-muted-foreground mb-2">Species</p>
+              <div className="grid grid-cols-2 gap-2">
                 <Button
                   variant={species === 'P' ? 'default' : 'outline'}
-                  size="sm"
                   onClick={() => { setSpecies('P'); setSelectedPart(null); }}
-                  className={`justify-start ${species === 'P' ? 'bg-pink-600 hover:bg-pink-700' : ''}`}
+                  className={`h-14 text-base ${species === 'P' ? 'bg-pink-600 hover:bg-pink-700' : ''}`}
                 >
                   {t('species.pork')}
                 </Button>
                 <Button
                   variant={species === 'B' ? 'default' : 'outline'}
-                  size="sm"
                   onClick={() => { setSpecies('B'); setSelectedPart(null); }}
-                  className={`justify-start ${species === 'B' ? 'bg-red-600 hover:bg-red-700' : ''}`}
+                  className={`h-14 text-base ${species === 'B' ? 'bg-red-600 hover:bg-red-700' : ''}`}
                 >
                   {t('species.beef')}
                 </Button>
                 <Button
                   variant={species === 'C' ? 'default' : 'outline'}
-                  size="sm"
                   onClick={() => { setSpecies('C'); setSelectedPart(null); }}
-                  className={`justify-start ${species === 'C' ? 'bg-yellow-600 hover:bg-yellow-700' : ''}`}
+                  className={`h-14 text-base ${species === 'C' ? 'bg-yellow-600 hover:bg-yellow-700' : ''}`}
                 >
                   {t('species.chicken')}
                 </Button>
                 <Button
                   variant={species === 'all' ? 'default' : 'outline'}
-                  size="sm"
                   onClick={() => { setSpecies('all'); setSelectedPart(null); }}
-                  className="justify-start"
+                  className="h-14 text-base"
                 >
                   {t('common.all')}
                 </Button>
               </div>
             </div>
 
-            {/* Storage */}
-            <div className="mb-4">
-              <p className="text-xs font-medium text-muted-foreground mb-2">Storage</p>
-              <div className="flex flex-col gap-1.5">
+            {/* Storage - 2x2 Grid */}
+            <div className="mb-3">
+              <p className="text-sm font-medium text-muted-foreground mb-2">Storage</p>
+              <div className="grid grid-cols-2 gap-2">
                 <Button
                   variant={storage === 'F' ? 'default' : 'outline'}
-                  size="sm"
                   onClick={() => setStorage('F')}
-                  className={`justify-start ${storage === 'F' ? 'bg-blue-600 hover:bg-blue-700' : ''}`}
+                  className={`h-14 flex-col gap-1 ${storage === 'F' ? 'bg-blue-600 hover:bg-blue-700' : ''}`}
                 >
-                  <Snowflake className="h-4 w-4 mr-2" />
-                  {t('storage.frozen')}
+                  <Snowflake className="h-5 w-5" />
+                  <span className="text-sm">{t('storage.frozen')}</span>
                 </Button>
                 <Button
                   variant={storage === 'C' ? 'default' : 'outline'}
-                  size="sm"
                   onClick={() => setStorage('C')}
-                  className={`justify-start ${storage === 'C' ? 'bg-green-600 hover:bg-green-700' : ''}`}
+                  className={`h-14 flex-col gap-1 ${storage === 'C' ? 'bg-green-600 hover:bg-green-700' : ''}`}
                 >
-                  <Thermometer className="h-4 w-4 mr-2" />
-                  {t('storage.chilled')}
-                </Button>
-                <Button
-                  variant={storage === 'all' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setStorage('all')}
-                  className="justify-start"
-                >
-                  {t('common.all')}
+                  <Thermometer className="h-5 w-5" />
+                  <span className="text-sm">{t('storage.chilled')}</span>
                 </Button>
               </div>
             </div>
 
             {/* Part Buttons */}
             <div>
-              <p className="text-xs font-medium text-muted-foreground mb-2">{t('product.part')}</p>
+              <p className="text-sm font-medium text-muted-foreground mb-2">{t('product.part')}</p>
               <PartButtons
                 species={species}
                 selectedPart={selectedPart}

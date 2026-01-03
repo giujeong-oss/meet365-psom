@@ -85,24 +85,22 @@ export default function PartButtons({ species, selectedPart, onPartSelect }: Par
       {/* All 버튼 */}
       <Button
         variant={selectedPart === null ? 'default' : 'outline'}
-        size="sm"
-        className="w-full justify-start"
+        className="w-full justify-start h-10 text-sm"
         onClick={() => onPartSelect(null)}
       >
         All
       </Button>
 
       {/* 부위 버튼들 */}
-      <div className="grid grid-cols-2 gap-1.5">
+      <div className="grid grid-cols-2 gap-2">
         {parts.map((part) => (
           <Button
             key={part.code}
             variant={selectedPart === part.code ? 'default' : 'outline'}
-            size="sm"
-            className="justify-start text-left h-auto py-1.5 px-2"
+            className="justify-start text-left h-10 py-2 px-2"
             onClick={() => onPartSelect(part.code)}
           >
-            <span className="truncate text-xs">
+            <span className="truncate text-sm">
               {part.names[locale] || part.names.en}
             </span>
           </Button>
