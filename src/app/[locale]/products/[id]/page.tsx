@@ -24,6 +24,8 @@ import {
   Video,
   Image as ImageIcon,
   Loader2,
+  Play,
+  X,
 } from 'lucide-react';
 import type { Locale, SpecMedia } from '@/types';
 
@@ -40,6 +42,12 @@ export default function ProductDetailPage({ params }: Props) {
   const product = getMockProduct(decodedId);
   const [media, setMedia] = useState<SpecMedia[]>([]);
   const [loadingMedia, setLoadingMedia] = useState(true);
+  const [showVideo, setShowVideo] = useState(false);
+  const [selectedVideoUrl, setSelectedVideoUrl] = useState<string | null>(null);
+
+  // Filter media by category
+  const approvedMedia = media.filter((m) => m.category === 'approved' && !m.file.mimeType.startsWith('video/'));
+  const processVideos = media.filter((m) => m.type === 'process_video' || m.file.mimeType.startsWith('video/'));
 
   useEffect(() => {
     async function fetchMedia() {
@@ -112,21 +120,18 @@ export default function ProductDetailPage({ params }: Props) {
           />
         </div>
 
-        {/* Product Name in all languages */}
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold mb-2">{productName}</h2>
+        {/* Product Name */}
+        <div className="mb-4">
+          <h2 className="text-2xl font-bold mb-1">{productName}</h2>
           {locale !== 'ko' && product.names.ko && (
             <p className="text-sm text-muted-foreground">{product.names.ko}</p>
           )}
-          {locale !== 'th' && product.names.th && (
-            <p className="text-sm text-muted-foreground">{product.names.th}</p>
-          )}
         </div>
 
-        {/* Main Tabs */}
-        <Tabs defaultValue="specs" className="w-full">
+        {/* Top Tabs */}
+        <Tabs defaultValue="overview" className="w-full">
           <TabsList className="grid w-full grid-cols-3 mb-4">
-            <TabsTrigger value="specs" className="gap-2">
+            <TabsTrigger value="overview" className="gap-2">
               <FileText className="h-4 w-4" />
               {t('product.specs')}
             </TabsTrigger>
@@ -140,10 +145,118 @@ export default function ProductDetailPage({ params }: Props) {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="specs">
-            <SpecSheet product={product} />
+          {/* Overview Tab: Split Layout */}
+          <TabsContent value="overview">
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Left: Specs */}
+              <div>
+                <SpecSheet product={product} />
+              </div>
+
+              {/* Right: Approved Photos + Video Button */}
+              <div className="space-y-4">
+                {/* Approved Photos Preview */}
+                <div className="border rounded-lg p-4">
+                  <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
+                    <ImageIcon className="h-4 w-4 text-green-600" />
+                    {t('category.approved')} ({approvedMedia.length})
+                  </h3>
+                  {loadingMedia ? (
+                    <div className="flex items-center justify-center py-8">
+                      <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                    </div>
+                  ) : approvedMedia.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <ImageIcon className="h-10 w-10 mx-auto mb-2 opacity-50" />
+                      <p className="text-sm">{t('common.noData')}</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-3 gap-2">
+                      {approvedMedia.slice(0, 6).map((item) => (
+                        <div
+                          key={item.id}
+                          className="relative aspect-square rounded-lg overflow-hidden bg-muted"
+                        >
+                          {item.file.url && (
+                            <img
+                              src={item.file.url}
+                              alt={product.peakCode}
+                              className="object-cover w-full h-full"
+                            />
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {approvedMedia.length > 6 && (
+                    <p className="text-xs text-muted-foreground text-center mt-2">
+                      +{approvedMedia.length - 6} more
+                    </p>
+                  )}
+                </div>
+
+                {/* Process Video Button */}
+                <div className="border rounded-lg p-4">
+                  <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
+                    <Video className="h-4 w-4 text-blue-600" />
+                    {t('product.videoCount')} ({processVideos.length})
+                  </h3>
+                  {processVideos.length > 0 ? (
+                    <Button
+                      className="w-full gap-2"
+                      variant="outline"
+                      onClick={() => {
+                        setSelectedVideoUrl(processVideos[0].file.url);
+                        setShowVideo(true);
+                      }}
+                    >
+                      <Play className="h-4 w-4" />
+                      {t('product.videoCount')}
+                    </Button>
+                  ) : (
+                    <p className="text-sm text-muted-foreground text-center py-2">
+                      {t('common.noData')}
+                    </p>
+                  )}
+                </div>
+
+                {/* Inline Video Player */}
+                {showVideo && selectedVideoUrl && (
+                  <div className="border rounded-lg overflow-hidden bg-black">
+                    <div className="flex items-center justify-between p-2 bg-muted">
+                      <span className="text-sm font-medium">{t('product.videoCount')}</span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setShowVideo(false);
+                          setSelectedVideoUrl(null);
+                        }}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <video
+                      src={selectedVideoUrl}
+                      controls
+                      autoPlay
+                      className="w-full aspect-video"
+                    />
+                  </div>
+                )}
+
+                {/* Upload Button */}
+                <Link href={`/upload?code=${encodeURIComponent(product.peakCode)}`}>
+                  <Button className="w-full gap-2" variant="outline">
+                    <Camera className="h-4 w-4" />
+                    {t('upload.title')}
+                  </Button>
+                </Link>
+              </div>
+            </div>
           </TabsContent>
 
+          {/* Photos Tab: Full Gallery */}
           <TabsContent value="photos">
             {loadingMedia ? (
               <div className="flex items-center justify-center py-12">
@@ -156,8 +269,6 @@ export default function ProductDetailPage({ params }: Props) {
                 onMediaDeleted={handleMediaDeleted}
               />
             )}
-
-            {/* Upload Button */}
             <div className="mt-6">
               <Link href={`/upload?code=${encodeURIComponent(product.peakCode)}`}>
                 <Button className="w-full gap-2">
@@ -168,12 +279,29 @@ export default function ProductDetailPage({ params }: Props) {
             </div>
           </TabsContent>
 
+          {/* Videos Tab */}
           <TabsContent value="videos">
-            <div className="text-center py-12">
-              <Video className="h-16 w-16 mx-auto mb-4 text-muted-foreground/50" />
-              <p className="text-muted-foreground mb-2">{t('product.videoCount')}: {product.mediaCount?.processVideo || 0}</p>
-              <p className="text-sm text-muted-foreground">{t('product.videoComingSoon')}</p>
-            </div>
+            {processVideos.length > 0 ? (
+              <div className="space-y-4">
+                {processVideos.map((video) => (
+                  <div key={video.id} className="border rounded-lg overflow-hidden">
+                    <video
+                      src={video.file.url}
+                      controls
+                      className="w-full aspect-video"
+                    />
+                    <div className="p-2 bg-muted text-sm">
+                      {video.file.fileName}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <Video className="h-16 w-16 mx-auto mb-4 text-muted-foreground/50" />
+                <p className="text-muted-foreground mb-2">{t('common.noData')}</p>
+              </div>
+            )}
           </TabsContent>
         </Tabs>
 
