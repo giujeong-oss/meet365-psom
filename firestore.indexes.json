@@ -1,0 +1,93 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "specMedia",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "peakCode", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "specMedia",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "peakCode", "order": "ASCENDING" },
+        { "fieldPath": "category", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "specMedia",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "baseCode", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "specMedia",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "baseCode", "order": "ASCENDING" },
+        { "fieldPath": "category", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "productSpecs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "isActive", "order": "ASCENDING" },
+        { "fieldPath": "sortOrder", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "productSpecs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "species", "order": "ASCENDING" },
+        { "fieldPath": "isActive", "order": "ASCENDING" },
+        { "fieldPath": "sortOrder", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "productSpecs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "storage", "order": "ASCENDING" },
+        { "fieldPath": "isActive", "order": "ASCENDING" },
+        { "fieldPath": "sortOrder", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "productSpecs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "species", "order": "ASCENDING" },
+        { "fieldPath": "storage", "order": "ASCENDING" },
+        { "fieldPath": "isActive", "order": "ASCENDING" },
+        { "fieldPath": "sortOrder", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "productSpecs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "partCode", "order": "ASCENDING" },
+        { "fieldPath": "isActive", "order": "ASCENDING" },
+        { "fieldPath": "sortOrder", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "partMaster",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "species", "order": "ASCENDING" },
+        { "fieldPath": "isActive", "order": "ASCENDING" },
+        { "fieldPath": "sortOrder", "order": "ASCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

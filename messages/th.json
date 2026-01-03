@@ -67,14 +67,14 @@
     "recentlyViewed": "ดูล่าสุด"
   },
   "upload": {
-    "title": "อัปโหลดรูปภาพ",
+    "title": "อัปโหลดไฟล์",
     "dragDrop": "ลากหรือคลิกเพื่ออัปโหลด",
     "selectCategory": "เลือกหมวดหมู่",
     "uploading": "กำลังอัปโหลด...",
     "success": "อัปโหลดสำเร็จ",
     "failed": "อัปโหลดล้มเหลว",
     "maxSize": "ขนาดไฟล์สูงสุด: {size}MB",
-    "allowedTypes": "รูปแบบที่อนุญาต: JPG, PNG, WebP"
+    "allowedTypes": "รูปแบบที่อนุญาต: JPG, PNG, WebP, MP4"
   },
   "quality": {
     "acceptance": "เกณฑ์การยอมรับ",

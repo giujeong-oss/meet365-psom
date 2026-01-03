@@ -258,6 +258,8 @@ export default function UploadPage() {
             <ImageUploader
               onFilesSelected={handleFilesSelected}
               disabled={uploading}
+              acceptedTypes={['image/jpeg', 'image/png', 'image/webp', 'video/mp4', 'video/quicktime']}
+              maxSizeMB={100}
             />
 
             {/* Preview Grid */}

@@ -67,14 +67,14 @@
     "recentlyViewed": "Recently Viewed"
   },
   "upload": {
-    "title": "Upload Image",
+    "title": "Upload File",
     "dragDrop": "Drag and drop or click to upload",
     "selectCategory": "Select Category",
     "uploading": "Uploading...",
     "success": "Upload successful",
     "failed": "Upload failed",
     "maxSize": "Max file size: {size}MB",
-    "allowedTypes": "Allowed formats: JPG, PNG, WebP"
+    "allowedTypes": "Allowed formats: JPG, PNG, WebP, MP4"
   },
   "quality": {
     "acceptance": "Acceptance Criteria",

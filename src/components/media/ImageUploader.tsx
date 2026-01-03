@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Upload, X, Image as ImageIcon, AlertCircle } from 'lucide-react';
+import { Upload, X, Image as ImageIcon, AlertCircle, Video } from 'lucide-react';
 
 interface ImageUploaderProps {
   onFilesSelected: (files: File[]) => void;
@@ -172,20 +172,33 @@ interface ImagePreviewProps {
 
 export function ImagePreview({ file, onRemove, progress, error }: ImagePreviewProps) {
   const [preview, setPreview] = useState<string | null>(null);
+  const isVideo = file.type.startsWith('video/');
 
   // Generate preview
   useState(() => {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setPreview(reader.result as string);
-    };
-    reader.readAsDataURL(file);
+    if (!isVideo) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      // For videos, create object URL
+      setPreview(URL.createObjectURL(file));
+    }
   });
 
   return (
     <div className="relative group">
       <div className="aspect-square rounded-lg overflow-hidden bg-muted">
-        {preview ? (
+        {isVideo ? (
+          <div className="w-full h-full flex items-center justify-center bg-gray-900 relative">
+            <Video className="h-10 w-10 text-white" />
+            <span className="absolute bottom-1 left-1 text-xs text-white bg-black/60 px-1 rounded">
+              VIDEO
+            </span>
+          </div>
+        ) : preview ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={preview}

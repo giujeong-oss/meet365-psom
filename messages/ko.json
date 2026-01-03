@@ -67,14 +67,14 @@
     "recentlyViewed": "최근 조회"
   },
   "upload": {
-    "title": "이미지 업로드",
-    "dragDrop": "이미지를 드래그하거나 클릭하여 업로드",
+    "title": "파일 업로드",
+    "dragDrop": "파일을 드래그하거나 클릭하여 업로드",
     "selectCategory": "분류 선택",
     "uploading": "업로드 중...",
     "success": "업로드 완료",
     "failed": "업로드 실패",
     "maxSize": "최대 파일 크기: {size}MB",
-    "allowedTypes": "허용 형식: JPG, PNG, WebP"
+    "allowedTypes": "허용 형식: JPG, PNG, WebP, MP4"
   },
   "quality": {
     "acceptance": "합격 기준",
