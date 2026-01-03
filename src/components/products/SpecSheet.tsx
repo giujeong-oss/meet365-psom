@@ -72,7 +72,7 @@ export default function SpecSheet({ product }: SpecSheetProps) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-2">
             {specItems.map((item, index) => (
               <div
                 key={index}
