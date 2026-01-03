@@ -4,12 +4,14 @@ import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Package, Upload, Settings, Home } from 'lucide-react';
+import { Package, Upload, Settings, Home, Code, PlusCircle, FileText } from 'lucide-react';
 import LanguageSwitcher from '@/components/layout/LanguageSwitcher';
 import { AuthGuard } from '@/components/auth';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function HomePage() {
   const t = useTranslations();
+  const { isAdmin } = useAuth();
 
   const menuItems = [
     {
@@ -94,6 +96,43 @@ export default function HomePage() {
             </Button>
           </div>
         </div>
+
+        {/* Admin Dev Menu */}
+        {isAdmin && (
+          <div className="mt-8 p-4 border-2 border-dashed border-orange-300 rounded-lg bg-orange-50">
+            <div className="flex items-center gap-2 mb-4">
+              <Code className="h-5 w-5 text-orange-600" />
+              <h2 className="text-lg font-semibold text-orange-800">{t('admin.devMenu')}</h2>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              <Link href="/products/new">
+                <Button variant="outline" size="sm" className="w-full gap-2 border-orange-300 hover:bg-orange-100">
+                  <PlusCircle className="h-4 w-4" />
+                  {t('product.new')}
+                </Button>
+              </Link>
+              <Link href="/products">
+                <Button variant="outline" size="sm" className="w-full gap-2 border-orange-300 hover:bg-orange-100">
+                  <Package className="h-4 w-4" />
+                  {t('nav.products')}
+                </Button>
+              </Link>
+              <Link href="/upload">
+                <Button variant="outline" size="sm" className="w-full gap-2 border-orange-300 hover:bg-orange-100">
+                  <Upload className="h-4 w-4" />
+                  {t('nav.upload')}
+                </Button>
+              </Link>
+              <Link href="/settings">
+                <Button variant="outline" size="sm" className="w-full gap-2 border-orange-300 hover:bg-orange-100">
+                  <Settings className="h-4 w-4" />
+                  {t('nav.settings')}
+                </Button>
+              </Link>
+            </div>
+            <p className="text-xs text-orange-600 mt-3">{t('admin.devMenuNote')}</p>
+          </div>
+        )}
       </main>
 
       {/* Mobile Bottom Navigation */}

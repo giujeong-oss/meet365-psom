@@ -1,6 +1,6 @@
 'use client';
 
-import { use } from 'react';
+import { use, useState, useCallback } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { Button } from '@/components/ui/button';
@@ -20,6 +20,8 @@ import {
   Camera,
   FileText,
   AlertCircle,
+  Video,
+  Image as ImageIcon,
 } from 'lucide-react';
 import type { Locale } from '@/types';
 
@@ -34,7 +36,12 @@ export default function ProductDetailPage({ params }: Props) {
 
   const decodedId = decodeURIComponent(id);
   const product = getMockProduct(decodedId);
-  const media = getMockMedia(decodedId);
+  const initialMedia = getMockMedia(decodedId);
+  const [media, setMedia] = useState(initialMedia);
+
+  const handleMediaDeleted = useCallback((mediaId: string) => {
+    setMedia((prev) => prev.filter((m) => m.id !== mediaId));
+  }, []);
 
   if (!product) {
     return (
@@ -100,14 +107,18 @@ export default function ProductDetailPage({ params }: Props) {
 
         {/* Main Tabs */}
         <Tabs defaultValue="specs" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-4">
+          <TabsList className="grid w-full grid-cols-3 mb-4">
             <TabsTrigger value="specs" className="gap-2">
               <FileText className="h-4 w-4" />
               {t('product.specs')}
             </TabsTrigger>
-            <TabsTrigger value="media" className="gap-2">
-              <Camera className="h-4 w-4" />
-              {t('product.media')}
+            <TabsTrigger value="photos" className="gap-2">
+              <ImageIcon className="h-4 w-4" />
+              {t('product.photos')}
+            </TabsTrigger>
+            <TabsTrigger value="videos" className="gap-2">
+              <Video className="h-4 w-4" />
+              {t('product.videos')}
             </TabsTrigger>
           </TabsList>
 
@@ -115,8 +126,12 @@ export default function ProductDetailPage({ params }: Props) {
             <SpecSheet product={product} />
           </TabsContent>
 
-          <TabsContent value="media">
-            <MediaGallery media={media} peakCode={product.peakCode} />
+          <TabsContent value="photos">
+            <MediaGallery
+              media={media}
+              peakCode={product.peakCode}
+              onMediaDeleted={handleMediaDeleted}
+            />
 
             {/* Upload Button */}
             <div className="mt-6">
@@ -126,6 +141,14 @@ export default function ProductDetailPage({ params }: Props) {
                   {t('upload.title')}
                 </Button>
               </Link>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="videos">
+            <div className="text-center py-12">
+              <Video className="h-16 w-16 mx-auto mb-4 text-muted-foreground/50" />
+              <p className="text-muted-foreground mb-2">{t('product.videoCount')}: {product.mediaCount?.processVideo || 0}</p>
+              <p className="text-sm text-muted-foreground">{t('product.videoComingSoon')}</p>
             </div>
           </TabsContent>
         </Tabs>

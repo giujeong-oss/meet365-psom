@@ -6,13 +6,17 @@ import Image from 'next/image';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { CheckCircle, XCircle, BookOpen, GraduationCap, ImageIcon } from 'lucide-react';
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { CheckCircle, XCircle, BookOpen, GraduationCap, ImageIcon, Trash2, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { deleteDocument, COLLECTIONS } from '@/lib/firebase/firestore';
+import { deleteFile } from '@/lib/firebase/storage';
 import type { SpecMedia, MediaCategory } from '@/types';
 
 interface MediaGalleryProps {
   media: SpecMedia[];
   peakCode: string;
+  onMediaDeleted?: (mediaId: string) => void;
 }
 
 const categoryConfig: Record<
@@ -25,9 +29,50 @@ const categoryConfig: Record<
   training: { icon: GraduationCap, color: 'text-yellow-600', bgColor: 'bg-yellow-50' },
 };
 
-export default function MediaGallery({ media, peakCode }: MediaGalleryProps) {
+export default function MediaGallery({ media, peakCode, onMediaDeleted }: MediaGalleryProps) {
   const t = useTranslations();
   const [selectedImage, setSelectedImage] = useState<SpecMedia | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  const handleDelete = async () => {
+    if (!selectedImage) return;
+
+    setIsDeleting(true);
+    try {
+      // Delete from Storage if path exists
+      if (selectedImage.file.url) {
+        try {
+          // Extract path from URL or use stored path
+          const urlPath = selectedImage.file.url;
+          if (urlPath.includes('firebase')) {
+            // Try to delete from storage
+            const pathMatch = urlPath.match(/o\/(.+?)\?/);
+            if (pathMatch) {
+              const storagePath = decodeURIComponent(pathMatch[1]);
+              await deleteFile(storagePath);
+            }
+          }
+        } catch (storageError) {
+          console.error('Storage delete error:', storageError);
+        }
+      }
+
+      // Delete from Firestore
+      await deleteDocument(COLLECTIONS.SPEC_MEDIA, selectedImage.id);
+
+      // Notify parent
+      onMediaDeleted?.(selectedImage.id);
+
+      // Close dialogs
+      setShowDeleteConfirm(false);
+      setSelectedImage(null);
+    } catch (error) {
+      console.error('Delete error:', error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   const categories: MediaCategory[] = ['approved', 'rejected', 'reference', 'training'];
 
@@ -123,8 +168,11 @@ export default function MediaGallery({ media, peakCode }: MediaGalleryProps) {
       </Tabs>
 
       {/* Image Preview Dialog */}
-      <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
-        <DialogContent className="max-w-3xl p-0">
+      <Dialog open={!!selectedImage && !showDeleteConfirm} onOpenChange={() => setSelectedImage(null)}>
+        <DialogContent className="max-w-3xl p-0" aria-describedby={undefined}>
+          <DialogTitle className="sr-only">
+            {peakCode} - {t('product.media')}
+          </DialogTitle>
           {selectedImage && (
             <div className="relative">
               <div className="relative aspect-[4/3]">
@@ -173,9 +221,55 @@ export default function MediaGallery({ media, peakCode }: MediaGalleryProps) {
                     Lot: {selectedImage.metadata.lotNumber}
                   </p>
                 )}
+
+                {/* Delete Button */}
+                <div className="pt-2 border-t">
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    className="w-full gap-2"
+                    onClick={() => setShowDeleteConfirm(true)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    {t('common.delete')}
+                  </Button>
+                </div>
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <DialogContent aria-describedby="delete-dialog-description">
+          <DialogTitle>{t('common.deleteConfirm')}</DialogTitle>
+          <DialogDescription id="delete-dialog-description">
+            {t('media.deleteWarning')}
+          </DialogDescription>
+          <div className="flex gap-2 justify-end mt-4">
+            <Button
+              variant="outline"
+              onClick={() => setShowDeleteConfirm(false)}
+              disabled={isDeleting}
+            >
+              {t('common.cancel')}
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDelete}
+              disabled={isDeleting}
+            >
+              {isDeleting ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  {t('common.deleting')}
+                </>
+              ) : (
+                t('common.delete')
+              )}
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </>

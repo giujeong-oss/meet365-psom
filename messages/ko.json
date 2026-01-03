@@ -15,7 +15,9 @@
     "all": "전체",
     "noData": "데이터가 없습니다",
     "confirm": "확인",
-    "back": "뒤로"
+    "back": "뒤로",
+    "deleteConfirm": "삭제 확인",
+    "deleting": "삭제 중..."
   },
   "nav": {
     "home": "홈",
@@ -47,6 +49,10 @@
     "specs": "스펙 정보",
     "quality": "품질 기준",
     "media": "미디어",
+    "photos": "사진",
+    "videos": "영상",
+    "videoCount": "정형 영상",
+    "videoComingSoon": "영상 기능 준비 중",
     "yield": "수율",
     "lossRate": "로스율",
     "weight": "중량",
@@ -93,5 +99,12 @@
     "onlyMeetNet": "@meet365.net 계정만 로그인 가능합니다",
     "accountRequired": "계정이 필요합니다",
     "connected": "연결됨"
+  },
+  "media": {
+    "deleteWarning": "이 이미지를 삭제하시겠습니까? 이 작업은 취소할 수 없습니다."
+  },
+  "admin": {
+    "devMenu": "개발자 메뉴",
+    "devMenuNote": "관리자 전용 메뉴입니다"
   }
 }

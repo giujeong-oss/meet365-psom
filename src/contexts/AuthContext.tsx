@@ -11,6 +11,7 @@ import {
 import { auth } from '@/lib/firebase';
 
 const ALLOWED_DOMAIN = 'meet365.net';
+const ADMIN_EMAILS = ['giujeong@meet365.net'];
 
 interface AuthContextType {
   user: User | null;
@@ -19,6 +20,7 @@ interface AuthContextType {
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
   isAuthorized: boolean;
+  isAdmin: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -29,6 +31,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
 
   const isAuthorized = user?.email?.endsWith(`@${ALLOWED_DOMAIN}`) ?? false;
+  const isAdmin = user?.email ? ADMIN_EMAILS.includes(user.email) : false;
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -93,6 +96,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signInWithGoogle,
         signOut,
         isAuthorized,
+        isAdmin,
       }}
     >
       {children}
