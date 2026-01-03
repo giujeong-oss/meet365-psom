@@ -147,7 +147,7 @@ export default function ProductDetailPage({ params }: Props) {
 
           {/* Overview Tab: Split Layout */}
           <TabsContent value="overview">
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
               {/* Left: Specs */}
               <div>
                 <SpecSheet product={product} />

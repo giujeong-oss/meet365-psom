@@ -12,7 +12,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: '*.firebasestorage.app',
+        hostname: 'meet365-12ce8.firebasestorage.app',
       },
     ],
   },
