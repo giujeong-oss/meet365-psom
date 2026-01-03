@@ -453,16 +453,16 @@ export default function ProductDetailPage({ params }: Props) {
 
       {/* Image Preview Dialog */}
       <Dialog open={!!previewImage} onOpenChange={() => setPreviewImage(null)}>
-        <DialogContent className="max-w-4xl p-0 overflow-hidden">
+        <DialogContent className="max-w-6xl w-[95vw] p-0 overflow-hidden">
           <DialogTitle className="sr-only">
             {previewImage?.category === 'approved' ? t('category.approved') : t('category.rejected')}
           </DialogTitle>
           {previewImage && (
-            <div className="relative">
+            <div className="relative bg-black">
               <img
                 src={previewImage.file.url}
                 alt={product?.peakCode || ''}
-                className="w-full h-auto max-h-[80vh] object-contain"
+                className="w-full h-auto max-h-[90vh] object-contain"
               />
               <div className="absolute top-2 left-2">
                 <span className={`px-2 py-1 rounded text-xs font-medium ${
