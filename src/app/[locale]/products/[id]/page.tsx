@@ -45,9 +45,8 @@ export default function ProductDetailPage({ params }: Props) {
 
   const decodedId = decodeURIComponent(id);
   const [product, setProduct] = useState<ProductSpec | null>(null);
-  const [loadingProduct, setLoadingProduct] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [media, setMedia] = useState<SpecMedia[]>([]);
-  const [loadingMedia, setLoadingMedia] = useState(true);
   const [showVideo, setShowVideo] = useState(false);
   const [selectedVideoUrl, setSelectedVideoUrl] = useState<string | null>(null);
   const [previewImage, setPreviewImage] = useState<SpecMedia | null>(null);
@@ -57,13 +56,19 @@ export default function ProductDetailPage({ params }: Props) {
   const rejectedMedia = media.filter((m) => m.category === 'rejected' && !m.file.mimeType.startsWith('video/'));
   const processVideos = media.filter((m) => m.type === 'process_video' || m.file.mimeType.startsWith('video/'));
 
-  // Fetch product from Firestore
+  // 병렬 쿼리: 제품 + 미디어 동시 로드 (성능 최적화)
   useEffect(() => {
-    async function fetchProduct() {
+    async function fetchData() {
       if (!decodedId) return;
       try {
-        setLoadingProduct(true);
-        const firestoreProduct = await getProductSpec(decodedId);
+        setLoading(true);
+
+        // Promise.all로 병렬 실행 - 네트워크 대기 시간 단축
+        const [firestoreProduct, fetchedMedia] = await Promise.all([
+          getProductSpec(decodedId),
+          getSpecMedia(decodedId),
+        ]);
+
         if (firestoreProduct) {
           setProduct(firestoreProduct);
         } else {
@@ -71,32 +76,18 @@ export default function ProductDetailPage({ params }: Props) {
           const mockProduct = getMockProduct(decodedId);
           setProduct(mockProduct || null);
         }
+
+        setMedia(fetchedMedia || []);
       } catch (error) {
         // Fallback to mock data
         const mockProduct = getMockProduct(decodedId);
         setProduct(mockProduct || null);
+        setMedia([]);
       } finally {
-        setLoadingProduct(false);
+        setLoading(false);
       }
     }
-    fetchProduct();
-  }, [decodedId]);
-
-  // Fetch media
-  useEffect(() => {
-    async function fetchMedia() {
-      if (!decodedId) return;
-      try {
-        setLoadingMedia(true);
-        const fetchedMedia = await getSpecMedia(decodedId);
-        setMedia(fetchedMedia);
-      } catch (error) {
-        // Silently fail - just show no media
-      } finally {
-        setLoadingMedia(false);
-      }
-    }
-    fetchMedia();
+    fetchData();
   }, [decodedId]);
 
   const handleMediaDeleted = useCallback((mediaId: string) => {
@@ -104,7 +95,7 @@ export default function ProductDetailPage({ params }: Props) {
   }, []);
 
   // Loading state
-  if (loadingProduct) {
+  if (loading) {
     return (
       <AuthGuard>
         <div className="min-h-screen bg-background flex items-center justify-center">
@@ -226,7 +217,7 @@ export default function ProductDetailPage({ params }: Props) {
                       <ImageIcon className="h-4 w-4 text-green-600" />
                       {t('category.approved')} ({approvedMedia.length})
                     </h3>
-                    {loadingMedia ? (
+                    {loading ? (
                       <div className="flex items-center justify-center py-8">
                         <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                       </div>
@@ -267,7 +258,7 @@ export default function ProductDetailPage({ params }: Props) {
                       <AlertCircle className="h-4 w-4 text-red-600" />
                       {t('category.rejected')} ({rejectedMedia.length})
                     </h3>
-                    {loadingMedia ? (
+                    {loading ? (
                       <div className="flex items-center justify-center py-8">
                         <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                       </div>
@@ -366,7 +357,7 @@ export default function ProductDetailPage({ params }: Props) {
 
           {/* Photos Tab: Full Gallery */}
           <TabsContent value="photos">
-            {loadingMedia ? (
+            {loading ? (
               <div className="flex items-center justify-center py-12">
                 <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
               </div>

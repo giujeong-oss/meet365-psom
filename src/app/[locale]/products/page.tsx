@@ -19,48 +19,53 @@ export default function ProductsPage() {
   const [species, setSpecies] = useState<Species | 'all'>('all');
   const [storage, setStorage] = useState<Storage | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [products, setProducts] = useState<ProductSpec[]>([]);
+  const [allProducts, setAllProducts] = useState<ProductSpec[]>([]); // 전체 데이터 캐시
   const [loading, setLoading] = useState(true);
   const [useFirestore, setUseFirestore] = useState(true);
 
-  // Fetch products from Firestore
+  // 최초 1회만 전체 데이터 로드 (필터 없이)
   useEffect(() => {
-    async function fetchProducts() {
+    async function fetchAllProducts() {
       try {
         setLoading(true);
-        const speciesFilter = species === 'all' ? undefined : species;
-        const storageFilter = storage === 'all' ? undefined : storage;
-        const tradeTypeFilter = tradeType === 'all' ? undefined : tradeType;
-        const firestoreProducts = await getProductSpecs(speciesFilter, storageFilter, tradeTypeFilter);
+        const firestoreProducts = await getProductSpecs(); // 필터 없이 전체 로드
 
         if (firestoreProducts.length > 0) {
-          setProducts(firestoreProducts);
+          setAllProducts(firestoreProducts);
           setUseFirestore(true);
         } else {
-          // Fallback to mock data if Firestore is empty
-          setProducts(mockProducts);
+          setAllProducts(mockProducts);
           setUseFirestore(false);
         }
       } catch (error) {
-        // Fallback to mock data on error
-        setProducts(mockProducts);
+        setAllProducts(mockProducts);
         setUseFirestore(false);
       } finally {
         setLoading(false);
       }
     }
-    fetchProducts();
-  }, [species, storage, tradeType]);
+    fetchAllProducts();
+  }, []); // 의존성 배열 비움 - 최초 1회만 실행
+
+  // 클라이언트 필터링 (즉시 반영)
+  const filteredByFilters = useMemo(() => {
+    return allProducts.filter((product) => {
+      if (tradeType !== 'all' && product.tradeType !== tradeType) return false;
+      if (species !== 'all' && product.species !== species) return false;
+      if (storage !== 'all' && product.storage !== storage) return false;
+      return true;
+    });
+  }, [allProducts, tradeType, species, storage]);
 
   // Client-side search filtering with tokenized search
   const filteredProducts = useMemo(() => {
-    if (!searchQuery) return products;
+    if (!searchQuery) return filteredByFilters;
 
     // Split query into tokens for multi-word search
     const tokens = searchQuery.toLowerCase().split(/\s+/).filter(Boolean);
-    if (tokens.length === 0) return products;
+    if (tokens.length === 0) return filteredByFilters;
 
-    return products.filter((product) => {
+    return filteredByFilters.filter((product) => {
       const searchableText = [
         product.peakCode,
         product.names.ko,
@@ -79,7 +84,7 @@ export default function ProductsPage() {
       // All tokens must match (AND logic)
       return tokens.every(token => searchableText.includes(token));
     });
-  }, [products, searchQuery]);
+  }, [filteredByFilters, searchQuery]);
 
   return (
     <AuthGuard>
