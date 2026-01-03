@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useState, useCallback } from 'react';
+import { use, useState, useCallback, useEffect } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { Button } from '@/components/ui/button';
@@ -10,7 +10,8 @@ import { AuthGuard } from '@/components/auth';
 import SpecSheet from '@/components/products/SpecSheet';
 import MediaGallery from '@/components/products/MediaGallery';
 import QualityBadge from '@/components/products/QualityBadge';
-import { getMockProduct, getMockMedia } from '@/lib/mock-data';
+import { getMockProduct } from '@/lib/mock-data';
+import { getSpecMedia } from '@/lib/firebase/firestore';
 import {
   ArrowLeft,
   Home,
@@ -22,8 +23,9 @@ import {
   AlertCircle,
   Video,
   Image as ImageIcon,
+  Loader2,
 } from 'lucide-react';
-import type { Locale } from '@/types';
+import type { Locale, SpecMedia } from '@/types';
 
 type Props = {
   params: Promise<{ id: string; locale: string }>;
@@ -36,8 +38,24 @@ export default function ProductDetailPage({ params }: Props) {
 
   const decodedId = decodeURIComponent(id);
   const product = getMockProduct(decodedId);
-  const initialMedia = getMockMedia(decodedId);
-  const [media, setMedia] = useState(initialMedia);
+  const [media, setMedia] = useState<SpecMedia[]>([]);
+  const [loadingMedia, setLoadingMedia] = useState(true);
+
+  useEffect(() => {
+    async function fetchMedia() {
+      if (!decodedId) return;
+      try {
+        setLoadingMedia(true);
+        const fetchedMedia = await getSpecMedia(decodedId);
+        setMedia(fetchedMedia);
+      } catch (error) {
+        // Silently fail - just show no media
+      } finally {
+        setLoadingMedia(false);
+      }
+    }
+    fetchMedia();
+  }, [decodedId]);
 
   const handleMediaDeleted = useCallback((mediaId: string) => {
     setMedia((prev) => prev.filter((m) => m.id !== mediaId));
@@ -127,11 +145,17 @@ export default function ProductDetailPage({ params }: Props) {
           </TabsContent>
 
           <TabsContent value="photos">
-            <MediaGallery
-              media={media}
-              peakCode={product.peakCode}
-              onMediaDeleted={handleMediaDeleted}
-            />
+            {loadingMedia ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+              </div>
+            ) : (
+              <MediaGallery
+                media={media}
+                peakCode={product.peakCode}
+                onMediaDeleted={handleMediaDeleted}
+              />
+            )}
 
             {/* Upload Button */}
             <div className="mt-6">

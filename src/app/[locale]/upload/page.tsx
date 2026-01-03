@@ -11,6 +11,9 @@ import LanguageSwitcher from '@/components/layout/LanguageSwitcher';
 import { AuthGuard } from '@/components/auth';
 import { ImageUploader, ImagePreview, CategorySelector } from '@/components/media';
 import { mockProducts } from '@/lib/mock-data';
+import { uploadFile } from '@/lib/firebase/storage';
+import { addDocument, COLLECTIONS, getBaseCode, serverTimestamp } from '@/lib/firebase/firestore';
+import { useAuth } from '@/contexts/AuthContext';
 import {
   ArrowLeft,
   Home,
@@ -35,6 +38,7 @@ export default function UploadPage() {
   const t = useTranslations();
   const searchParams = useSearchParams();
   const initialCode = searchParams.get('code') || '';
+  const { user } = useAuth();
 
   const [peakCode, setPeakCode] = useState(initialCode);
   const [category, setCategory] = useState<MediaCategory>('approved');
@@ -71,39 +75,73 @@ export default function UploadPage() {
   };
 
   const handleUpload = async () => {
-    if (!peakCode || files.length === 0) return;
+    if (!peakCode || files.length === 0 || !user) return;
 
     setUploading(true);
 
-    // Simulate upload for each file
     for (const selectedFile of files) {
       if (selectedFile.uploaded) continue;
 
-      // Simulate progress
-      for (let progress = 0; progress <= 100; progress += 20) {
-        await new Promise((resolve) => setTimeout(resolve, 200));
+      try {
+        // Upload to Firebase Storage with progress tracking
+        const uploadResult = await uploadFile(
+          selectedFile.file,
+          peakCode,
+          category,
+          {
+            onProgress: (progress) => {
+              setFiles((prev) =>
+                prev.map((f) =>
+                  f.id === selectedFile.id ? { ...f, progress } : f
+                )
+              );
+            },
+          }
+        );
+
+        // Save metadata to Firestore specMedia collection
+        const baseCode = getBaseCode(peakCode);
+        const isVideo = selectedFile.file.type.startsWith('video/');
+
+        await addDocument(COLLECTIONS.SPEC_MEDIA, {
+          peakCode,
+          baseCode,
+          type: isVideo ? 'process_video' : 'appearance',
+          category,
+          file: {
+            url: uploadResult.url,
+            fileName: uploadResult.fileName,
+            fileSize: uploadResult.fileSize,
+            mimeType: uploadResult.mimeType,
+          },
+          metadata: {
+            capturedAt: serverTimestamp(),
+            capturedBy: user.uid,
+          },
+          tags: [],
+          isApproved: category === 'approved',
+          createdBy: user.uid,
+        });
+
+        // Mark as uploaded
         setFiles((prev) =>
-          prev.map((f) => (f.id === selectedFile.id ? { ...f, progress } : f))
+          prev.map((f) =>
+            f.id === selectedFile.id ? { ...f, uploaded: true, progress: 100 } : f
+          )
+        );
+      } catch (error) {
+        // Mark as error
+        setFiles((prev) =>
+          prev.map((f) =>
+            f.id === selectedFile.id
+              ? { ...f, error: error instanceof Error ? error.message : 'Upload failed' }
+              : f
+          )
         );
       }
-
-      // Mark as uploaded
-      setFiles((prev) =>
-        prev.map((f) =>
-          f.id === selectedFile.id ? { ...f, uploaded: true } : f
-        )
-      );
     }
 
     setUploading(false);
-
-    // TODO: Actually upload to Firebase Storage when configured
-    // eslint-disable-next-line no-console
-    console.log('Files to upload:', {
-      peakCode,
-      category,
-      files: files.map((f) => f.file.name),
-    });
   };
 
   const allUploaded = files.length > 0 && files.every((f) => f.uploaded);
