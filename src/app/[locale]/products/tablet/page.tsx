@@ -9,7 +9,7 @@ import { AuthGuard } from '@/components/auth';
 import { PartButtons } from '@/components/products';
 import { mockProducts } from '@/lib/mock-data';
 import { getProductSpecs } from '@/lib/firebase/firestore';
-import { Home, Package, Loader2, BoxIcon, ShoppingCart, Snowflake, Thermometer, PlusCircle } from 'lucide-react';
+import { Home, Package, Loader2, BoxIcon, ShoppingCart, Snowflake, Thermometer, PlusCircle, Search, X, Delete } from 'lucide-react';
 import type { Species, Storage, ProductSpec, TradeType, Locale } from '@/types';
 
 export default function TabletProductsPage() {
@@ -22,6 +22,10 @@ export default function TabletProductsPage() {
   const [storage, setStorage] = useState<Storage | 'all'>('all');
   const [selectedPart, setSelectedPart] = useState<string | null>(null);
   const [columns, setColumns] = useState<3 | 4 | 5>(4); // 기본 4열
+
+  // Numpad Search
+  const [showNumpad, setShowNumpad] = useState(false);
+  const [searchCode, setSearchCode] = useState('');
 
   // Data
   const [allProducts, setAllProducts] = useState<ProductSpec[]>([]);
@@ -52,16 +56,38 @@ export default function TabletProductsPage() {
     fetchAllProducts();
   }, []);
 
-  // Client-side filtering
+  // Client-side filtering (모든 필터 AND 조건 적용)
   const filteredProducts = useMemo(() => {
     return allProducts.filter((product) => {
+      // 왼쪽 패널 필터 (항상 적용)
       if (tradeType !== 'all' && product.tradeType !== tradeType) return false;
       if (species !== 'all' && product.species !== species) return false;
       if (storage !== 'all' && product.storage !== storage) return false;
       if (selectedPart && product.partCode !== selectedPart) return false;
+
+      // 숫자 키패드 검색 (추가 필터)
+      if (searchCode) {
+        const codeMatch = product.peakCode.includes(searchCode) ||
+                          product.partCode.includes(searchCode);
+        if (!codeMatch) return false;
+      }
+
       return true;
     });
-  }, [allProducts, tradeType, species, storage, selectedPart]);
+  }, [allProducts, tradeType, species, storage, selectedPart, searchCode]);
+
+  // Numpad handlers
+  const handleNumpadPress = (num: string) => {
+    setSearchCode(prev => prev + num);
+  };
+
+  const handleNumpadDelete = () => {
+    setSearchCode(prev => prev.slice(0, -1));
+  };
+
+  const handleNumpadClear = () => {
+    setSearchCode('');
+  };
 
   return (
     <AuthGuard>
@@ -297,6 +323,92 @@ export default function TabletProductsPage() {
             )}
           </div>
         </main>
+
+        {/* Floating Numpad Button */}
+        <button
+          onClick={() => setShowNumpad(!showNumpad)}
+          className={`fixed bottom-6 right-6 z-50 w-16 h-16 rounded-full shadow-xl flex items-center justify-center transition-all ${
+            showNumpad || searchCode
+              ? 'bg-primary text-primary-foreground'
+              : 'bg-muted hover:bg-muted/80 text-muted-foreground'
+          }`}
+        >
+          {searchCode ? (
+            <span className="text-lg font-bold">{searchCode.slice(-4)}</span>
+          ) : (
+            <Search className="h-7 w-7" />
+          )}
+        </button>
+
+        {/* Numpad Panel */}
+        {showNumpad && (
+          <div className="fixed bottom-24 right-6 z-50 bg-background border rounded-xl shadow-2xl p-4 w-72">
+            {/* Search Display */}
+            <div className="flex items-center gap-2 mb-3 p-3 bg-muted rounded-lg">
+              <Search className="h-5 w-5 text-muted-foreground" />
+              <span className="flex-1 font-mono text-xl font-bold">
+                {searchCode || '코드 입력...'}
+              </span>
+              {searchCode && (
+                <button
+                  onClick={handleNumpadClear}
+                  className="p-1 hover:bg-background rounded"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              )}
+            </div>
+
+            {/* Results Count */}
+            <div className="text-sm text-muted-foreground mb-3 text-center">
+              {searchCode && `${filteredProducts.length}개 검색됨`}
+            </div>
+
+            {/* Numpad Grid */}
+            <div className="grid grid-cols-3 gap-2">
+              {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((num) => (
+                <Button
+                  key={num}
+                  variant="outline"
+                  className="h-14 text-2xl font-bold"
+                  onClick={() => handleNumpadPress(num)}
+                >
+                  {num}
+                </Button>
+              ))}
+              <Button
+                variant="outline"
+                className="h-14 text-lg"
+                onClick={handleNumpadClear}
+              >
+                C
+              </Button>
+              <Button
+                variant="outline"
+                className="h-14 text-2xl font-bold"
+                onClick={() => handleNumpadPress('0')}
+              >
+                0
+              </Button>
+              <Button
+                variant="outline"
+                className="h-14"
+                onClick={handleNumpadDelete}
+              >
+                <Delete className="h-6 w-6" />
+              </Button>
+            </div>
+
+            {/* Close Button */}
+            <Button
+              variant="ghost"
+              className="w-full mt-3"
+              onClick={() => setShowNumpad(false)}
+            >
+              닫기
+            </Button>
+          </div>
+        )}
       </div>
     </AuthGuard>
   );
