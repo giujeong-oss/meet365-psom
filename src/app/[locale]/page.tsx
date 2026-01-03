@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Package, Upload, Settings, Home, Code, PlusCircle, FileText } from 'lucide-react';
+import { Package, Upload, Settings, Home, Code, PlusCircle, FileText, Tablet } from 'lucide-react';
 import LanguageSwitcher from '@/components/layout/LanguageSwitcher';
 import { AuthGuard } from '@/components/auth';
 import { useAuth } from '@/contexts/AuthContext';
@@ -19,6 +19,12 @@ export default function HomePage() {
       icon: Package,
       label: t('nav.products'),
       description: t('product.title'),
+    },
+    {
+      href: '/products/tablet',
+      icon: Tablet,
+      label: 'Tablet',
+      description: t('product.title') + ' (Tablet)',
     },
     {
       href: '/upload',
@@ -60,7 +66,7 @@ export default function HomePage() {
         </div>
 
         {/* Menu Grid */}
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
           {menuItems.map((item) => (
             <Link key={item.href} href={item.href}>
               <Card className="h-full transition-colors hover:bg-accent cursor-pointer">

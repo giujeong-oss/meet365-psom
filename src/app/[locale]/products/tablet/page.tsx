@@ -9,7 +9,7 @@ import { AuthGuard } from '@/components/auth';
 import { PartButtons } from '@/components/products';
 import { mockProducts } from '@/lib/mock-data';
 import { getProductSpecs } from '@/lib/firebase/firestore';
-import { Home, Package, Loader2, BoxIcon, ShoppingCart, Snowflake, Thermometer, LayoutGrid, Grid3X3, Grid2X2 } from 'lucide-react';
+import { Home, Package, Loader2, BoxIcon, ShoppingCart, Snowflake, Thermometer, PlusCircle } from 'lucide-react';
 import type { Species, Storage, ProductSpec, TradeType, Locale } from '@/types';
 
 export default function TabletProductsPage() {
@@ -79,6 +79,9 @@ export default function TabletProductsPage() {
             {!useFirestore && (
               <span className="text-xs text-orange-500">(Mock)</span>
             )}
+            <Link href="/products/new" className="text-muted-foreground hover:text-primary" title={t('product.new')}>
+              <PlusCircle className="h-5 w-5" />
+            </Link>
             <LanguageSwitcher />
           </div>
         </header>
@@ -195,30 +198,42 @@ export default function TabletProductsPage() {
               </h2>
 
               {/* Column Selector */}
-              <div className="flex gap-1">
+              <div className="flex gap-2">
                 <Button
                   variant={columns === 3 ? 'default' : 'outline'}
-                  size="sm"
                   onClick={() => setColumns(3)}
-                  className="h-10 w-10 p-0"
+                  className="h-12 px-4 gap-2"
                 >
-                  <span className="text-sm font-bold">3</span>
+                  <div className="grid grid-cols-3 gap-0.5 w-5 h-5">
+                    {[...Array(9)].map((_, i) => (
+                      <div key={i} className="bg-current rounded-sm" />
+                    ))}
+                  </div>
+                  <span className="text-base font-bold">3</span>
                 </Button>
                 <Button
                   variant={columns === 4 ? 'default' : 'outline'}
-                  size="sm"
                   onClick={() => setColumns(4)}
-                  className="h-10 w-10 p-0"
+                  className="h-12 px-4 gap-2"
                 >
-                  <span className="text-sm font-bold">4</span>
+                  <div className="grid grid-cols-4 gap-0.5 w-6 h-5">
+                    {[...Array(8)].map((_, i) => (
+                      <div key={i} className="bg-current rounded-sm" />
+                    ))}
+                  </div>
+                  <span className="text-base font-bold">4</span>
                 </Button>
                 <Button
                   variant={columns === 5 ? 'default' : 'outline'}
-                  size="sm"
                   onClick={() => setColumns(5)}
-                  className="h-10 w-10 p-0"
+                  className="h-12 px-4 gap-2"
                 >
-                  <span className="text-sm font-bold">5</span>
+                  <div className="grid grid-cols-5 gap-0.5 w-7 h-5">
+                    {[...Array(10)].map((_, i) => (
+                      <div key={i} className="bg-current rounded-sm" />
+                    ))}
+                  </div>
+                  <span className="text-base font-bold">5</span>
                 </Button>
               </div>
             </div>
@@ -261,13 +276,19 @@ export default function TabletProductsPage() {
                       </span>
                     </div>
 
-                    {/* Product Code - Large */}
-                    <p className="font-mono text-lg font-bold truncate">
+                    {/* Product Code - Large (5열일 때 2줄로 표시) */}
+                    <p className={`font-mono font-bold ${
+                      columns === 5
+                        ? 'text-sm leading-tight break-all'
+                        : 'text-lg truncate'
+                    }`}>
                       {product.peakCode}
                     </p>
 
                     {/* Product Name - Large */}
-                    <p className="text-base text-muted-foreground truncate">
+                    <p className={`text-muted-foreground ${
+                      columns === 5 ? 'text-sm truncate' : 'text-base truncate'
+                    }`}>
                       {product.names[locale] || product.names.en}
                     </p>
                   </Link>
