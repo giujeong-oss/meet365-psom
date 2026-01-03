@@ -18,7 +18,10 @@ import {
   Info,
   User,
   LogOut,
+  Shield,
 } from 'lucide-react';
+
+const ADMIN_EMAIL = 'giujeong@meet365.net';
 
 export default function SettingsPage() {
   const t = useTranslations();
@@ -148,6 +151,27 @@ export default function SettingsPage() {
             </Link>
           </CardContent>
         </Card>
+
+        {/* Admin Panel (Admin only) */}
+        {user?.email === ADMIN_EMAIL && (
+          <Card className="border-orange-200 bg-orange-50/50">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base flex items-center gap-2 text-orange-700">
+                <Shield className="h-4 w-4" />
+                {t('admin.devMenu')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-xs text-orange-600 mb-3">{t('admin.devMenuNote')}</p>
+              <Link href="/admin">
+                <Button variant="outline" className="w-full gap-2 border-orange-300">
+                  <Database className="h-4 w-4" />
+                  Admin Panel
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+        )}
       </main>
 
       {/* Mobile Bottom Navigation */}
