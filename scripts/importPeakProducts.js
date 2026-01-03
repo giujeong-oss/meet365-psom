@@ -253,8 +253,50 @@ async function main() {
   }
 
   if (isImport) {
-    console.log('\n⚠️  Firestore import not yet implemented.');
-    console.log('Please run --preview first and verify the data.');
+    console.log('\n🔥 Starting Firestore import...');
+
+    // Firebase 초기화 (Admin SDK 대신 Client SDK 사용)
+    const { initializeApp } = require('firebase/app');
+    const { getFirestore, doc, setDoc, Timestamp } = require('firebase/firestore');
+
+    const firebaseConfig = {
+      apiKey: 'AIzaSyA4onlsnYxd1rdlvTnt9Fdf242IbIKiMX0',
+      authDomain: 'meet365-12ce8.firebaseapp.com',
+      projectId: 'meet365-12ce8',
+      storageBucket: 'meet365-12ce8.firebasestorage.app',
+      messagingSenderId: '721446238060',
+      appId: '1:721446238060:web:58f86e649c972f811de549',
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Batch import
+    let successCount = 0;
+    let errorCount = 0;
+
+    for (const product of products) {
+      try {
+        const docRef = doc(db, 'productSpecs', product.peakCode);
+        await setDoc(docRef, {
+          ...product,
+          createdAt: Timestamp.now(),
+          updatedAt: Timestamp.now(),
+        });
+        successCount++;
+
+        if (successCount % 50 === 0) {
+          console.log(`Progress: ${successCount}/${products.length}`);
+        }
+      } catch (error) {
+        console.error(`Error importing ${product.peakCode}:`, error.message);
+        errorCount++;
+      }
+    }
+
+    console.log(`\n✅ Import completed!`);
+    console.log(`   Success: ${successCount}`);
+    console.log(`   Errors: ${errorCount}`);
   }
 }
 

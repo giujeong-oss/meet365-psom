@@ -50,6 +50,7 @@ export default function ProductDetailPage({ params }: Props) {
 
   // Filter media by category
   const approvedMedia = media.filter((m) => m.category === 'approved' && !m.file.mimeType.startsWith('video/'));
+  const rejectedMedia = media.filter((m) => m.category === 'rejected' && !m.file.mimeType.startsWith('video/'));
   const processVideos = media.filter((m) => m.type === 'process_video' || m.file.mimeType.startsWith('video/'));
 
   // Fetch product from Firestore
@@ -199,46 +200,89 @@ export default function ProductDetailPage({ params }: Props) {
                 <SpecSheet product={product} />
               </div>
 
-              {/* Right: Approved Photos + Video Button */}
+              {/* Right: Approved/Rejected Photos + Video Button */}
               <div className="space-y-4">
-                {/* Approved Photos Preview */}
-                <div className="border rounded-lg p-4">
-                  <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
-                    <ImageIcon className="h-4 w-4 text-green-600" />
-                    {t('category.approved')} ({approvedMedia.length})
-                  </h3>
-                  {loadingMedia ? (
-                    <div className="flex items-center justify-center py-8">
-                      <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-                    </div>
-                  ) : approvedMedia.length === 0 ? (
-                    <div className="text-center py-8 text-muted-foreground">
-                      <ImageIcon className="h-10 w-10 mx-auto mb-2 opacity-50" />
-                      <p className="text-sm">{t('common.noData')}</p>
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-3 gap-2">
-                      {approvedMedia.slice(0, 6).map((item) => (
-                        <div
-                          key={item.id}
-                          className="relative aspect-square rounded-lg overflow-hidden bg-muted"
-                        >
-                          {item.file.url && (
-                            <img
-                              src={item.file.url}
-                              alt={product.peakCode}
-                              className="object-cover w-full h-full"
-                            />
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  {approvedMedia.length > 6 && (
-                    <p className="text-xs text-muted-foreground text-center mt-2">
-                      +{approvedMedia.length - 6} more
-                    </p>
-                  )}
+                {/* Photos Grid: Approved + Rejected side by side */}
+                <div className="grid grid-cols-2 gap-3">
+                  {/* Approved Photos Preview */}
+                  <div className="border rounded-lg p-3 border-green-200 bg-green-50/30">
+                    <h3 className="text-sm font-medium mb-2 flex items-center gap-2">
+                      <ImageIcon className="h-4 w-4 text-green-600" />
+                      {t('category.approved')} ({approvedMedia.length})
+                    </h3>
+                    {loadingMedia ? (
+                      <div className="flex items-center justify-center py-6">
+                        <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                      </div>
+                    ) : approvedMedia.length === 0 ? (
+                      <div className="text-center py-6 text-muted-foreground">
+                        <ImageIcon className="h-8 w-8 mx-auto mb-1 opacity-50" />
+                        <p className="text-xs">{t('common.noData')}</p>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-2 gap-1">
+                        {approvedMedia.slice(0, 4).map((item) => (
+                          <div
+                            key={item.id}
+                            className="relative aspect-square rounded overflow-hidden bg-muted"
+                          >
+                            {item.file.url && (
+                              <img
+                                src={item.file.url}
+                                alt={product.peakCode}
+                                className="object-cover w-full h-full"
+                              />
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    {approvedMedia.length > 4 && (
+                      <p className="text-xs text-muted-foreground text-center mt-1">
+                        +{approvedMedia.length - 4} more
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Rejected Photos Preview */}
+                  <div className="border rounded-lg p-3 border-red-200 bg-red-50/30">
+                    <h3 className="text-sm font-medium mb-2 flex items-center gap-2">
+                      <AlertCircle className="h-4 w-4 text-red-600" />
+                      {t('category.rejected')} ({rejectedMedia.length})
+                    </h3>
+                    {loadingMedia ? (
+                      <div className="flex items-center justify-center py-6">
+                        <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                      </div>
+                    ) : rejectedMedia.length === 0 ? (
+                      <div className="text-center py-6 text-muted-foreground">
+                        <ImageIcon className="h-8 w-8 mx-auto mb-1 opacity-50" />
+                        <p className="text-xs">{t('common.noData')}</p>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-2 gap-1">
+                        {rejectedMedia.slice(0, 4).map((item) => (
+                          <div
+                            key={item.id}
+                            className="relative aspect-square rounded overflow-hidden bg-muted"
+                          >
+                            {item.file.url && (
+                              <img
+                                src={item.file.url}
+                                alt={product.peakCode}
+                                className="object-cover w-full h-full"
+                              />
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    {rejectedMedia.length > 4 && (
+                      <p className="text-xs text-muted-foreground text-center mt-1">
+                        +{rejectedMedia.length - 4} more
+                      </p>
+                    )}
+                  </div>
                 </div>
 
                 {/* Process Video Button */}
