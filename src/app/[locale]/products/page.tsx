@@ -10,7 +10,7 @@ import LanguageSwitcher from '@/components/layout/LanguageSwitcher';
 import { AuthGuard } from '@/components/auth';
 import { mockProducts, filterProducts } from '@/lib/mock-data';
 import { getProductSpecs } from '@/lib/firebase/firestore';
-import { Search, ArrowLeft, Home, Package, Upload, Settings, Loader2, BoxIcon, ShoppingCart } from 'lucide-react';
+import { Search, ArrowLeft, Home, Package, Upload, Settings, Loader2, BoxIcon, ShoppingCart, Tablet } from 'lucide-react';
 import type { Species, Storage, ProductSpec, TradeType } from '@/types';
 
 export default function ProductsPage() {
@@ -99,6 +99,9 @@ export default function ProductsPage() {
             <Package className="h-5 w-5" />
           </Link>
           <h1 className="font-bold text-lg flex-1">{t('product.title')}</h1>
+          <Link href="/products/tablet" className="text-muted-foreground hover:text-primary" title="Tablet Mode">
+            <Tablet className="h-5 w-5" />
+          </Link>
           <LanguageSwitcher />
         </div>
       </header>
