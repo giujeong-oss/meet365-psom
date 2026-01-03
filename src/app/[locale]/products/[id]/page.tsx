@@ -334,7 +334,7 @@ export default function ProductDetailPage({ params }: Props) {
                       src={selectedVideoUrl}
                       controls
                       autoPlay
-                      className="w-full aspect-video"
+                      className="w-full max-h-[70vh] object-contain"
                     />
                   </div>
                 )}
@@ -382,7 +382,7 @@ export default function ProductDetailPage({ params }: Props) {
                     <video
                       src={video.file.url}
                       controls
-                      className="w-full aspect-video"
+                      className="w-full max-h-[80vh] object-contain"
                     />
                     <div className="p-2 bg-muted text-sm">
                       {video.file.fileName}
