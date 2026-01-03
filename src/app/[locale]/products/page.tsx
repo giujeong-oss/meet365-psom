@@ -92,8 +92,11 @@ export default function ProductsPage() {
       {/* Header */}
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-14 items-center gap-4 px-4">
-          <Link href="/" className="md:hidden">
-            <ArrowLeft className="h-5 w-5" />
+          <Link href="/" className="text-muted-foreground hover:text-primary">
+            <Home className="h-5 w-5" />
+          </Link>
+          <Link href="/products" className="text-primary">
+            <Package className="h-5 w-5" />
           </Link>
           <h1 className="font-bold text-lg flex-1">{t('product.title')}</h1>
           <LanguageSwitcher />

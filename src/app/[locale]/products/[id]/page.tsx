@@ -132,8 +132,11 @@ export default function ProductDetailPage({ params }: Props) {
       {/* Header */}
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-14 items-center gap-4 px-4">
-          <Link href="/products">
-            <ArrowLeft className="h-5 w-5" />
+          <Link href="/" className="text-muted-foreground hover:text-primary">
+            <Home className="h-5 w-5" />
+          </Link>
+          <Link href="/products" className="text-muted-foreground hover:text-primary">
+            <Package className="h-5 w-5" />
           </Link>
           <div className="flex-1 min-w-0">
             <h1 className="font-bold text-sm truncate">{productName}</h1>
