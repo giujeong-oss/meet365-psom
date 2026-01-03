@@ -1,0 +1,97 @@
+{
+  "common": {
+    "appName": "PSOM",
+    "appDescription": "Product Spec Operation Management",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "retry": "Retry",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "filter": "Filter",
+    "all": "All",
+    "noData": "No data available",
+    "confirm": "Confirm",
+    "back": "Back"
+  },
+  "nav": {
+    "home": "Home",
+    "products": "Products",
+    "upload": "Upload",
+    "settings": "Settings"
+  },
+  "species": {
+    "pork": "Pork",
+    "beef": "Beef",
+    "chicken": "Chicken"
+  },
+  "storage": {
+    "chilled": "Chilled",
+    "frozen": "Frozen"
+  },
+  "category": {
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "reference": "Reference",
+    "training": "Training"
+  },
+  "product": {
+    "title": "Product List",
+    "detail": "Product Detail",
+    "new": "New Product",
+    "code": "Product Code",
+    "name": "Product Name",
+    "specs": "Specifications",
+    "quality": "Quality Standards",
+    "media": "Media",
+    "yield": "Yield",
+    "lossRate": "Loss Rate",
+    "weight": "Weight",
+    "thickness": "Thickness",
+    "shelfLife": "Shelf Life",
+    "temperature": "Storage Temp",
+    "grade": "Grade",
+    "supplier": "Supplier",
+    "part": "Part",
+    "variant": "Variant",
+    "unit": "Unit",
+    "recentlyViewed": "Recently Viewed"
+  },
+  "upload": {
+    "title": "Upload Image",
+    "dragDrop": "Drag and drop or click to upload",
+    "selectCategory": "Select Category",
+    "uploading": "Uploading...",
+    "success": "Upload successful",
+    "failed": "Upload failed",
+    "maxSize": "Max file size: {size}MB",
+    "allowedTypes": "Allowed formats: JPG, PNG, WebP"
+  },
+  "quality": {
+    "acceptance": "Acceptance Criteria",
+    "defect": "Defect",
+    "defectType": "Defect Type",
+    "severity": "Severity",
+    "minor": "Minor",
+    "major": "Major",
+    "critical": "Critical"
+  },
+  "language": {
+    "ko": "한국어",
+    "th": "ไทย",
+    "my": "မြန်မာ",
+    "en": "English",
+    "select": "Select Language"
+  },
+  "auth": {
+    "signInWithGoogle": "Sign in with Google",
+    "signOut": "Sign out",
+    "account": "Account",
+    "onlyMeetNet": "Only @meet365.net accounts can sign in",
+    "accountRequired": "account required",
+    "connected": "Connected"
+  }
+}

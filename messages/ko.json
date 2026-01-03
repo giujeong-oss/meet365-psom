@@ -1,0 +1,97 @@
+{
+  "common": {
+    "appName": "PSOM",
+    "appDescription": "제품 스펙 관리 시스템",
+    "loading": "로딩 중...",
+    "error": "오류가 발생했습니다",
+    "retry": "다시 시도",
+    "save": "저장",
+    "cancel": "취소",
+    "delete": "삭제",
+    "edit": "수정",
+    "add": "추가",
+    "search": "검색",
+    "filter": "필터",
+    "all": "전체",
+    "noData": "데이터가 없습니다",
+    "confirm": "확인",
+    "back": "뒤로"
+  },
+  "nav": {
+    "home": "홈",
+    "products": "제품",
+    "upload": "업로드",
+    "settings": "설정"
+  },
+  "species": {
+    "pork": "돼지",
+    "beef": "소",
+    "chicken": "닭"
+  },
+  "storage": {
+    "chilled": "냉장",
+    "frozen": "냉동"
+  },
+  "category": {
+    "approved": "적격",
+    "rejected": "부적격",
+    "reference": "기준",
+    "training": "학습용"
+  },
+  "product": {
+    "title": "제품 목록",
+    "detail": "제품 상세",
+    "new": "제품 등록",
+    "code": "제품 코드",
+    "name": "제품명",
+    "specs": "스펙 정보",
+    "quality": "품질 기준",
+    "media": "미디어",
+    "yield": "수율",
+    "lossRate": "로스율",
+    "weight": "중량",
+    "thickness": "두께",
+    "shelfLife": "유통기한",
+    "temperature": "보관온도",
+    "grade": "등급",
+    "supplier": "공급처",
+    "part": "부위",
+    "variant": "변형",
+    "unit": "단위",
+    "recentlyViewed": "최근 조회"
+  },
+  "upload": {
+    "title": "이미지 업로드",
+    "dragDrop": "이미지를 드래그하거나 클릭하여 업로드",
+    "selectCategory": "분류 선택",
+    "uploading": "업로드 중...",
+    "success": "업로드 완료",
+    "failed": "업로드 실패",
+    "maxSize": "최대 파일 크기: {size}MB",
+    "allowedTypes": "허용 형식: JPG, PNG, WebP"
+  },
+  "quality": {
+    "acceptance": "합격 기준",
+    "defect": "결함",
+    "defectType": "결함 유형",
+    "severity": "심각도",
+    "minor": "경미",
+    "major": "주요",
+    "critical": "심각"
+  },
+  "language": {
+    "ko": "한국어",
+    "th": "ไทย",
+    "my": "မြန်မာ",
+    "en": "English",
+    "select": "언어 선택"
+  },
+  "auth": {
+    "signInWithGoogle": "Google로 로그인",
+    "signOut": "로그아웃",
+    "account": "계정",
+    "onlyMeetNet": "@meet365.net 계정만 로그인 가능합니다",
+    "accountRequired": "계정이 필요합니다",
+    "connected": "연결됨"
+  }
+}

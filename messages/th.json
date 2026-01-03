@@ -1,0 +1,97 @@
+{
+  "common": {
+    "appName": "PSOM",
+    "appDescription": "ระบบจัดการข้อมูลสินค้า",
+    "loading": "กำลังโหลด...",
+    "error": "เกิดข้อผิดพลาด",
+    "retry": "ลองอีกครั้ง",
+    "save": "บันทึก",
+    "cancel": "ยกเลิก",
+    "delete": "ลบ",
+    "edit": "แก้ไข",
+    "add": "เพิ่ม",
+    "search": "ค้นหา",
+    "filter": "กรอง",
+    "all": "ทั้งหมด",
+    "noData": "ไม่มีข้อมูล",
+    "confirm": "ยืนยัน",
+    "back": "กลับ"
+  },
+  "nav": {
+    "home": "หน้าแรก",
+    "products": "สินค้า",
+    "upload": "อัปโหลด",
+    "settings": "ตั้งค่า"
+  },
+  "species": {
+    "pork": "หมู",
+    "beef": "เนื้อ",
+    "chicken": "ไก่"
+  },
+  "storage": {
+    "chilled": "แช่เย็น",
+    "frozen": "แช่แข็ง"
+  },
+  "category": {
+    "approved": "ผ่าน",
+    "rejected": "ไม่ผ่าน",
+    "reference": "อ้างอิง",
+    "training": "ฝึกอบรม"
+  },
+  "product": {
+    "title": "รายการสินค้า",
+    "detail": "รายละเอียดสินค้า",
+    "new": "เพิ่มสินค้า",
+    "code": "รหัสสินค้า",
+    "name": "ชื่อสินค้า",
+    "specs": "ข้อมูลจำเพาะ",
+    "quality": "มาตรฐานคุณภาพ",
+    "media": "สื่อ",
+    "yield": "ผลผลิต",
+    "lossRate": "อัตราการสูญเสีย",
+    "weight": "น้ำหนัก",
+    "thickness": "ความหนา",
+    "shelfLife": "อายุการเก็บ",
+    "temperature": "อุณหภูมิเก็บ",
+    "grade": "เกรด",
+    "supplier": "ผู้จัดหา",
+    "part": "ชิ้นส่วน",
+    "variant": "รูปแบบ",
+    "unit": "หน่วย",
+    "recentlyViewed": "ดูล่าสุด"
+  },
+  "upload": {
+    "title": "อัปโหลดรูปภาพ",
+    "dragDrop": "ลากหรือคลิกเพื่ออัปโหลด",
+    "selectCategory": "เลือกหมวดหมู่",
+    "uploading": "กำลังอัปโหลด...",
+    "success": "อัปโหลดสำเร็จ",
+    "failed": "อัปโหลดล้มเหลว",
+    "maxSize": "ขนาดไฟล์สูงสุด: {size}MB",
+    "allowedTypes": "รูปแบบที่อนุญาต: JPG, PNG, WebP"
+  },
+  "quality": {
+    "acceptance": "เกณฑ์การยอมรับ",
+    "defect": "ข้อบกพร่อง",
+    "defectType": "ประเภทข้อบกพร่อง",
+    "severity": "ความรุนแรง",
+    "minor": "เล็กน้อย",
+    "major": "สำคัญ",
+    "critical": "วิกฤต"
+  },
+  "language": {
+    "ko": "한국어",
+    "th": "ไทย",
+    "my": "မြန်မာ",
+    "en": "English",
+    "select": "เลือกภาษา"
+  },
+  "auth": {
+    "signInWithGoogle": "เข้าสู่ระบบด้วย Google",
+    "signOut": "ออกจากระบบ",
+    "account": "บัญชี",
+    "onlyMeetNet": "เฉพาะบัญชี @meet365.net เท่านั้น",
+    "accountRequired": "ต้องมีบัญชี",
+    "connected": "เชื่อมต่อแล้ว"
+  }
+}
