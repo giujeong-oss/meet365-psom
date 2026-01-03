@@ -5,6 +5,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import LanguageSwitcher from '@/components/layout/LanguageSwitcher';
 import { AuthGuard } from '@/components/auth';
 import SpecSheet from '@/components/products/SpecSheet';
@@ -47,6 +48,7 @@ export default function ProductDetailPage({ params }: Props) {
   const [loadingMedia, setLoadingMedia] = useState(true);
   const [showVideo, setShowVideo] = useState(false);
   const [selectedVideoUrl, setSelectedVideoUrl] = useState<string | null>(null);
+  const [previewImage, setPreviewImage] = useState<SpecMedia | null>(null);
 
   // Filter media by category
   const approvedMedia = media.filter((m) => m.category === 'approved' && !m.file.mimeType.startsWith('video/'));
@@ -194,9 +196,9 @@ export default function ProductDetailPage({ params }: Props) {
 
           {/* Overview Tab: Split Layout */}
           <TabsContent value="overview">
-            <div className="grid sm:grid-cols-[280px_1fr] gap-4 sm:gap-6">
-              {/* Left: Specs (narrow) */}
-              <div className="text-left">
+            <div className="grid sm:grid-cols-[auto_1fr] gap-4 sm:gap-6">
+              {/* Left: Specs (auto width) */}
+              <div className="text-left sm:max-w-[260px]">
                 <SpecSheet product={product} />
               </div>
 
@@ -220,11 +222,12 @@ export default function ProductDetailPage({ params }: Props) {
                         <p className="text-sm">{t('common.noData')}</p>
                       </div>
                     ) : (
-                      <div className="grid grid-cols-3 gap-2">
-                        {approvedMedia.slice(0, 6).map((item) => (
+                      <div className="grid grid-cols-1 gap-2">
+                        {approvedMedia.slice(0, 2).map((item) => (
                           <div
                             key={item.id}
-                            className="relative aspect-square rounded-lg overflow-hidden bg-muted"
+                            className="relative aspect-video rounded-lg overflow-hidden bg-muted cursor-pointer hover:opacity-90 transition-opacity"
+                            onClick={() => setPreviewImage(item)}
                           >
                             {item.file.url && (
                               <img
@@ -237,9 +240,9 @@ export default function ProductDetailPage({ params }: Props) {
                         ))}
                       </div>
                     )}
-                    {approvedMedia.length > 6 && (
+                    {approvedMedia.length > 2 && (
                       <p className="text-xs text-muted-foreground text-center mt-2">
-                        +{approvedMedia.length - 6} more
+                        +{approvedMedia.length - 2} more
                       </p>
                     )}
                   </div>
@@ -260,11 +263,12 @@ export default function ProductDetailPage({ params }: Props) {
                         <p className="text-sm">{t('common.noData')}</p>
                       </div>
                     ) : (
-                      <div className="grid grid-cols-3 gap-2">
-                        {rejectedMedia.slice(0, 6).map((item) => (
+                      <div className="grid grid-cols-1 gap-2">
+                        {rejectedMedia.slice(0, 2).map((item) => (
                           <div
                             key={item.id}
-                            className="relative aspect-square rounded-lg overflow-hidden bg-muted"
+                            className="relative aspect-video rounded-lg overflow-hidden bg-muted cursor-pointer hover:opacity-90 transition-opacity"
+                            onClick={() => setPreviewImage(item)}
                           >
                             {item.file.url && (
                               <img
@@ -277,9 +281,9 @@ export default function ProductDetailPage({ params }: Props) {
                         ))}
                       </div>
                     )}
-                    {rejectedMedia.length > 6 && (
+                    {rejectedMedia.length > 2 && (
                       <p className="text-xs text-muted-foreground text-center mt-2">
-                        +{rejectedMedia.length - 6} more
+                        +{rejectedMedia.length - 2} more
                       </p>
                     )}
                   </div>
@@ -446,6 +450,33 @@ export default function ProductDetailPage({ params }: Props) {
           </Link>
         </div>
       </nav>
+
+      {/* Image Preview Dialog */}
+      <Dialog open={!!previewImage} onOpenChange={() => setPreviewImage(null)}>
+        <DialogContent className="max-w-4xl p-0 overflow-hidden">
+          <DialogTitle className="sr-only">
+            {previewImage?.category === 'approved' ? t('category.approved') : t('category.rejected')}
+          </DialogTitle>
+          {previewImage && (
+            <div className="relative">
+              <img
+                src={previewImage.file.url}
+                alt={product?.peakCode || ''}
+                className="w-full h-auto max-h-[80vh] object-contain"
+              />
+              <div className="absolute top-2 left-2">
+                <span className={`px-2 py-1 rounded text-xs font-medium ${
+                  previewImage.category === 'approved'
+                    ? 'bg-green-100 text-green-800'
+                    : 'bg-red-100 text-red-800'
+                }`}>
+                  {previewImage.category === 'approved' ? t('category.approved') : t('category.rejected')}
+                </span>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
     </AuthGuard>
   );

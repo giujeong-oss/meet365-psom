@@ -105,84 +105,68 @@ export default function SpecSheet({ product }: SpecSheetProps) {
         </CardContent>
       </Card>
 
-      {/* Quality Standards */}
-      {product.qualityStandards && (
+      {/* Quality Standards + Code Info Side by Side */}
+      <div className="grid grid-cols-2 gap-2">
+        {/* Quality Standards */}
         <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base flex items-center gap-2">
-              <Building2 className="h-4 w-4" />
+          <CardHeader className="pb-2 px-3 pt-3">
+            <CardTitle className="text-sm flex items-center gap-1">
+              <Building2 className="h-3 w-3" />
               {t('product.quality')}
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
-            {/* Grade */}
-            {product.qualityStandards.grade && (
+          <CardContent className="space-y-2 px-3 pb-3">
+            {product.qualityStandards?.grade && (
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">{t('product.grade')}</span>
-                <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100">
+                <span className="text-xs text-muted-foreground">{t('product.grade')}</span>
+                <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100 text-xs px-1.5 py-0">
                   {product.qualityStandards.grade}
                 </Badge>
               </div>
             )}
-
-            {/* Marbling */}
-            {product.qualityStandards.marbling && (
+            {product.qualityStandards?.marbling && (
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Marbling</span>
-                <span className="text-sm font-medium">
-                  {product.qualityStandards.marbling.min} - {product.qualityStandards.marbling.max}
+                <span className="text-xs text-muted-foreground">Marbling</span>
+                <span className="text-xs font-medium">
+                  {product.qualityStandards.marbling.min}-{product.qualityStandards.marbling.max}
                 </span>
               </div>
             )}
-
-            {/* Acceptance Criteria */}
-            {product.qualityStandards.acceptanceCriteria && (
-              <div className="pt-2 border-t">
-                <p className="text-xs text-muted-foreground mb-1">
-                  {t('quality.acceptance')}
-                </p>
-                <p className="text-sm">
-                  {product.qualityStandards.acceptanceCriteria[locale] ||
-                    product.qualityStandards.acceptanceCriteria.en}
-                </p>
-              </div>
+            {!product.qualityStandards && (
+              <p className="text-xs text-muted-foreground">-</p>
             )}
           </CardContent>
         </Card>
-      )}
 
-      {/* Code Info */}
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-base">{t('product.code')}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Peak Code</span>
-              <span className="font-mono">{product.peakCode}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Base Code</span>
-              <span className="font-mono">{product.baseCode}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">{t('product.supplier')}</span>
-              <span>{product.supplierCode}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">{t('product.part')}</span>
-              <span>{product.partCode}</span>
-            </div>
-            {product.variant && (
+        {/* Code Info */}
+        <Card>
+          <CardHeader className="pb-2 px-3 pt-3">
+            <CardTitle className="text-sm">{t('product.code')}</CardTitle>
+          </CardHeader>
+          <CardContent className="px-3 pb-3">
+            <div className="space-y-1 text-xs">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">{t('product.variant')}</span>
-                <span>{product.variant}</span>
+                <span className="text-muted-foreground">Peak</span>
+                <span className="font-mono text-[10px]">{product.peakCode}</span>
               </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">{t('product.supplier')}</span>
+                <span>{product.supplierCode}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">{t('product.part')}</span>
+                <span>{product.partCode}</span>
+              </div>
+              {product.variant && (
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">{t('product.variant')}</span>
+                  <span>{product.variant}</span>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
