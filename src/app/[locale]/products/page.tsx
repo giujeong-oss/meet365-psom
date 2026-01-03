@@ -99,9 +99,6 @@ export default function ProductsPage() {
             <Package className="h-5 w-5" />
           </Link>
           <h1 className="font-bold text-lg flex-1">{t('product.title')}</h1>
-          <Link href="/products/tablet" className="text-muted-foreground hover:text-primary" title="Tablet Mode">
-            <Tablet className="h-5 w-5" />
-          </Link>
           <LanguageSwitcher />
         </div>
       </header>
@@ -204,6 +201,15 @@ export default function ProductsPage() {
           <ProductGrid products={filteredProducts} />
         )}
       </main>
+
+      {/* Floating Tablet Button */}
+      <Link
+        href="/products/tablet"
+        className="fixed top-20 right-4 z-40 bg-primary text-primary-foreground rounded-full shadow-lg hover:bg-primary/90 transition-all flex items-center justify-center w-16 h-16"
+        title="Tablet Mode"
+      >
+        <Tablet className="h-8 w-8" />
+      </Link>
 
       {/* Mobile Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background md:hidden">
