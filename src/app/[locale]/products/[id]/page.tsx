@@ -29,6 +29,8 @@ import {
   Play,
   X,
   Edit,
+  BoxIcon,
+  ShoppingCart,
 } from 'lucide-react';
 import type { Locale, SpecMedia } from '@/types';
 
@@ -160,8 +162,20 @@ export default function ProductDetailPage({ params }: Props) {
 
       {/* Main Content */}
       <main className="container px-4 py-4">
-        {/* Quality Badges */}
-        <div className="mb-4">
+        {/* Trade Type + Quality Badges */}
+        <div className="mb-4 flex flex-wrap items-center gap-2">
+          {/* Trade Type Badge */}
+          {product.tradeType === '1' ? (
+            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+              <BoxIcon className="h-3 w-3" />
+              {t('tradeType.raw')}
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+              <ShoppingCart className="h-3 w-3" />
+              {t('tradeType.sales')}
+            </span>
+          )}
           <QualityBadge
             species={product.species}
             storage={product.storage}

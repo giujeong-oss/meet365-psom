@@ -107,5 +107,11 @@
   "admin": {
     "devMenu": "개발자 메뉴",
     "devMenuNote": "관리자 전용 메뉴입니다"
+  },
+  "tradeType": {
+    "raw": "원재료",
+    "sales": "판매제품",
+    "rawDesc": "입고 검수 기준",
+    "salesDesc": "정형/가공 기준"
   }
 }

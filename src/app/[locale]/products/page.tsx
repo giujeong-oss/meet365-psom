@@ -10,11 +10,12 @@ import LanguageSwitcher from '@/components/layout/LanguageSwitcher';
 import { AuthGuard } from '@/components/auth';
 import { mockProducts, filterProducts } from '@/lib/mock-data';
 import { getProductSpecs } from '@/lib/firebase/firestore';
-import { Search, ArrowLeft, Home, Package, Upload, Settings, Loader2 } from 'lucide-react';
-import type { Species, Storage, ProductSpec } from '@/types';
+import { Search, ArrowLeft, Home, Package, Upload, Settings, Loader2, BoxIcon, ShoppingCart } from 'lucide-react';
+import type { Species, Storage, ProductSpec, TradeType } from '@/types';
 
 export default function ProductsPage() {
   const t = useTranslations();
+  const [tradeType, setTradeType] = useState<TradeType | 'all'>('2'); // 기본값: 판매제품
   const [species, setSpecies] = useState<Species | 'all'>('all');
   const [storage, setStorage] = useState<Storage | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -29,7 +30,8 @@ export default function ProductsPage() {
         setLoading(true);
         const speciesFilter = species === 'all' ? undefined : species;
         const storageFilter = storage === 'all' ? undefined : storage;
-        const firestoreProducts = await getProductSpecs(speciesFilter, storageFilter);
+        const tradeTypeFilter = tradeType === 'all' ? undefined : tradeType;
+        const firestoreProducts = await getProductSpecs(speciesFilter, storageFilter, tradeTypeFilter);
 
         if (firestoreProducts.length > 0) {
           setProducts(firestoreProducts);
@@ -48,7 +50,7 @@ export default function ProductsPage() {
       }
     }
     fetchProducts();
-  }, [species, storage]);
+  }, [species, storage, tradeType]);
 
   // Client-side search filtering with tokenized search
   const filteredProducts = useMemo(() => {
@@ -95,6 +97,35 @@ export default function ProductsPage() {
 
       {/* Main Content */}
       <main className="container px-4 py-4">
+        {/* Trade Type Tabs (원재료/판매제품) */}
+        <div className="flex gap-2 mb-4 border-b pb-3">
+          <Button
+            variant={tradeType === '2' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setTradeType('2')}
+            className={tradeType === '2' ? 'bg-blue-600 hover:bg-blue-700' : ''}
+          >
+            <ShoppingCart className="h-4 w-4 mr-1" />
+            {t('tradeType.sales')}
+          </Button>
+          <Button
+            variant={tradeType === '1' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setTradeType('1')}
+            className={tradeType === '1' ? 'bg-orange-600 hover:bg-orange-700' : ''}
+          >
+            <BoxIcon className="h-4 w-4 mr-1" />
+            {t('tradeType.raw')}
+          </Button>
+          <Button
+            variant={tradeType === 'all' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setTradeType('all')}
+          >
+            {t('common.all')}
+          </Button>
+        </div>
+
         {/* Search */}
         <div className="relative mb-4">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />

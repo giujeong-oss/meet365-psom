@@ -93,10 +93,14 @@ export async function getProductSpec(peakCode: string): Promise<ProductSpec | nu
 
 export async function getProductSpecs(
   species?: 'P' | 'B' | 'C',
-  storage?: 'C' | 'F'
+  storage?: 'C' | 'F',
+  tradeType?: '1' | '2'
 ): Promise<ProductSpec[]> {
   const constraints: QueryConstraint[] = [];
 
+  if (tradeType) {
+    constraints.push(where('tradeType', '==', tradeType));
+  }
   if (species) {
     constraints.push(where('species', '==', species));
   }

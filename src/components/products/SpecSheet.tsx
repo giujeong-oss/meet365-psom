@@ -10,7 +10,9 @@ import {
   Percent,
   Ruler,
   Award,
-  Building2
+  Building2,
+  ClipboardCheck,
+  Scissors,
 } from 'lucide-react';
 import type { ProductSpec, Locale } from '@/types';
 
@@ -21,6 +23,7 @@ interface SpecSheetProps {
 export default function SpecSheet({ product }: SpecSheetProps) {
   const t = useTranslations();
   const locale = useLocale() as Locale;
+  const isRawMaterial = product.tradeType === '1';
 
   const specItems = [
     {
@@ -102,6 +105,32 @@ export default function SpecSheet({ product }: SpecSheetProps) {
             <span className="text-sm text-muted-foreground">{t('product.unit')}</span>
             <Badge variant="outline">{product.unit}</Badge>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Trade Type Specific Section */}
+      <Card className={isRawMaterial ? 'border-orange-200 bg-orange-50/30' : 'border-blue-200 bg-blue-50/30'}>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base flex items-center gap-2">
+            {isRawMaterial ? (
+              <>
+                <ClipboardCheck className="h-4 w-4 text-orange-600" />
+                {t('tradeType.rawDesc')}
+              </>
+            ) : (
+              <>
+                <Scissors className="h-4 w-4 text-blue-600" />
+                {t('tradeType.salesDesc')}
+              </>
+            )}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="text-sm text-muted-foreground">
+          {isRawMaterial ? (
+            <p>입고 시 품질 검수 기준을 확인하세요. 적격/부적격 사진을 참고하여 검수합니다.</p>
+          ) : (
+            <p>정형 및 가공 시 품질 기준을 확인하세요. 정형 영상과 단면 사진을 참고합니다.</p>
+          )}
         </CardContent>
       </Card>
 
