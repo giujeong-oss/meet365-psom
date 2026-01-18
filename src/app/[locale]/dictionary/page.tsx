@@ -259,7 +259,10 @@ export default function DictionaryPage() {
                           <td className="p-2 text-gray-700">{cut.en}</td>
                           <td className="p-2 text-gray-700">{cut.th}</td>
                           {isHalal && (
-                            <td className="p-2 text-gray-700 text-right" dir="rtl">{cut.ar || '-'}</td>
+                            <td className="p-2 text-gray-700">
+                              <div className="text-right" dir="rtl">{cut.ar || '-'}</div>
+                              {cut.arKo && <div className="text-xs text-gray-500 mt-0.5">{cut.arKo}</div>}
+                            </td>
                           )}
                           <td className="p-2 text-blue-600 text-xs">{cut.us}</td>
                           <td className="p-2">
