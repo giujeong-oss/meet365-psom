@@ -27,6 +27,9 @@ export default function DictionaryPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
 
+  // Check if current meat type is Halal (has Arabic names)
+  const isHalal = activeTab === 'beef' || activeTab === 'chicken';
+
   const stats = getMeatStats();
   const currentMeat = meatDataMap[activeTab];
 
@@ -164,6 +167,9 @@ export default function DictionaryPage() {
                       ? meat.name.my || meat.name.en
                       : meat.name.en}
                   </span>
+                  {meat.isHalal && (
+                    <span className="ml-1 text-green-600 text-xs" title="Halal">☪</span>
+                  )}
                   <span className="ml-1 text-xs bg-gray-200 px-1.5 py-0.5 rounded-full">
                     {count}
                   </span>
@@ -227,6 +233,14 @@ export default function DictionaryPage() {
                         <th className="p-2 text-left font-medium text-gray-700 min-w-28">
                           {t('dictionary.thai')}
                         </th>
+                        {isHalal && (
+                          <th className="p-2 text-left font-medium text-gray-700 min-w-28">
+                            <span className="flex items-center gap-1">
+                              {t('dictionary.arabic')}
+                              <span className="text-green-600 text-xs">☪</span>
+                            </span>
+                          </th>
+                        )}
                         <th className="p-2 text-left font-medium text-gray-700 min-w-24">
                           {t('dictionary.us')}
                         </th>
@@ -244,6 +258,9 @@ export default function DictionaryPage() {
                           <td className="p-2 font-medium text-gray-900">{cut.ko}</td>
                           <td className="p-2 text-gray-700">{cut.en}</td>
                           <td className="p-2 text-gray-700">{cut.th}</td>
+                          {isHalal && (
+                            <td className="p-2 text-gray-700 text-right" dir="rtl">{cut.ar || '-'}</td>
+                          )}
                           <td className="p-2 text-blue-600 text-xs">{cut.us}</td>
                           <td className="p-2">
                             {cut.peakCode && (
