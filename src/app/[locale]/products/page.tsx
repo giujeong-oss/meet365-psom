@@ -10,7 +10,7 @@ import LanguageSwitcher from '@/components/layout/LanguageSwitcher';
 import { AuthGuard } from '@/components/auth';
 import { mockProducts, filterProducts } from '@/lib/mock-data';
 import { getProductSpecs } from '@/lib/firebase/firestore';
-import { Search, ArrowLeft, Home, Package, Upload, Settings, Loader2, BoxIcon, ShoppingCart, Tablet, PlusCircle } from 'lucide-react';
+import { Search, ArrowLeft, Home, Package, Upload, Settings, Loader2, BoxIcon, ShoppingCart, Tablet, PlusCircle, Book } from 'lucide-react';
 import type { Species, Storage, ProductSpec, TradeType } from '@/types';
 
 export default function ProductsPage() {
@@ -97,6 +97,9 @@ export default function ProductsPage() {
           </Link>
           <Link href="/products" className="text-primary">
             <Package className="h-5 w-5" />
+          </Link>
+          <Link href="/dictionary" className="text-muted-foreground hover:text-primary" title={t('nav.dictionary')}>
+            <Book className="h-5 w-5" />
           </Link>
           <h1 className="font-bold text-lg flex-1">{t('product.title')}</h1>
           <Link href="/products/new" className="text-muted-foreground hover:text-primary" title={t('product.new')}>
@@ -216,7 +219,7 @@ export default function ProductsPage() {
 
       {/* Mobile Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background md:hidden">
-        <div className="grid grid-cols-4 h-16">
+        <div className="grid grid-cols-5 h-16">
           <Link href="/" className="flex flex-col items-center justify-center gap-1 text-muted-foreground hover:text-primary">
             <Home className="h-5 w-5" />
             <span className="text-xs">{t('nav.home')}</span>
@@ -224,6 +227,10 @@ export default function ProductsPage() {
           <Link href="/products" className="flex flex-col items-center justify-center gap-1 text-primary">
             <Package className="h-5 w-5" />
             <span className="text-xs">{t('nav.products')}</span>
+          </Link>
+          <Link href="/dictionary" className="flex flex-col items-center justify-center gap-1 text-muted-foreground hover:text-primary">
+            <Book className="h-5 w-5" />
+            <span className="text-xs">{t('nav.dictionary')}</span>
           </Link>
           <Link href="/upload" className="flex flex-col items-center justify-center gap-1 text-muted-foreground hover:text-primary">
             <Upload className="h-5 w-5" />

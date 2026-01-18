@@ -23,7 +23,8 @@
     "home": "หน้าแรก",
     "products": "สินค้า",
     "upload": "อัปโหลด",
-    "settings": "ตั้งค่า"
+    "settings": "ตั้งค่า",
+    "dictionary": "พจนานุกรมชิ้นส่วนเนื้อ"
   },
   "species": {
     "pork": "หมู",
@@ -113,5 +114,21 @@
     "sales": "สินค้าขาย",
     "rawDesc": "มาตรฐานตรวจรับ",
     "salesDesc": "มาตรฐานแปรรูป"
+  },
+  "dictionary": {
+    "title": "พจนานุกรมชิ้นส่วนเนื้อ",
+    "subtitle": "เกาหลี / อังกฤษ / ไทย / อเมริกัน ({count} รายการ)",
+    "searchPlaceholder": "ค้นหาชิ้นส่วน (KO/EN/TH)...",
+    "korean": "เกาหลี",
+    "english": "อังกฤษ",
+    "thai": "ไทย",
+    "us": "US Cut",
+    "peakCode": "รหัส Peak",
+    "note": "หมายเหตุ",
+    "noResults": "ไม่พบผลลัพธ์สำหรับ '{term}'",
+    "statistics": "สถิติ",
+    "total": "รวม",
+    "cuts": "ชิ้นส่วน",
+    "integrated": "เกาหลี/อเมริกัน/ไทย รวม"
   }
 }

@@ -23,7 +23,8 @@
     "home": "Home",
     "products": "Products",
     "upload": "Upload",
-    "settings": "Settings"
+    "settings": "Settings",
+    "dictionary": "Meat Dictionary"
   },
   "species": {
     "pork": "Pork",
@@ -113,5 +114,21 @@
     "sales": "Sales Products",
     "rawDesc": "Incoming Inspection Standards",
     "salesDesc": "Processing Standards"
+  },
+  "dictionary": {
+    "title": "Meat Cuts Dictionary",
+    "subtitle": "Korean / English / Thai / US ({count} cuts)",
+    "searchPlaceholder": "Search cuts (KO/EN/TH)...",
+    "korean": "Korean",
+    "english": "English",
+    "thai": "Thai",
+    "us": "US Cut",
+    "peakCode": "Peak Code",
+    "note": "Note",
+    "noResults": "No results for '{term}'",
+    "statistics": "Statistics",
+    "total": "Total",
+    "cuts": "cuts",
+    "integrated": "Korean/US/Thai Integrated"
   }
 }

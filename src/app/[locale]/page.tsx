@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Package, Upload, Settings, Home, Code, PlusCircle, FileText, Tablet } from 'lucide-react';
+import { Package, Upload, Settings, Home, Code, PlusCircle, FileText, Tablet, Book } from 'lucide-react';
 import LanguageSwitcher from '@/components/layout/LanguageSwitcher';
 import { AuthGuard } from '@/components/auth';
 import { useAuth } from '@/contexts/AuthContext';
@@ -19,6 +19,12 @@ export default function HomePage() {
       icon: Package,
       label: t('nav.products'),
       description: t('product.title'),
+    },
+    {
+      href: '/dictionary',
+      icon: Book,
+      label: t('nav.dictionary'),
+      description: t('dictionary.title'),
     },
     {
       href: '/products/tablet',
@@ -143,7 +149,7 @@ export default function HomePage() {
 
       {/* Mobile Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background md:hidden">
-        <div className="grid grid-cols-4 h-16">
+        <div className="grid grid-cols-5 h-16">
           <Link href="/" className="flex flex-col items-center justify-center gap-1 text-primary">
             <Home className="h-5 w-5" />
             <span className="text-xs">{t('nav.home')}</span>
@@ -151,6 +157,10 @@ export default function HomePage() {
           <Link href="/products" className="flex flex-col items-center justify-center gap-1 text-muted-foreground hover:text-primary">
             <Package className="h-5 w-5" />
             <span className="text-xs">{t('nav.products')}</span>
+          </Link>
+          <Link href="/dictionary" className="flex flex-col items-center justify-center gap-1 text-muted-foreground hover:text-primary">
+            <Book className="h-5 w-5" />
+            <span className="text-xs">{t('nav.dictionary')}</span>
           </Link>
           <Link href="/upload" className="flex flex-col items-center justify-center gap-1 text-muted-foreground hover:text-primary">
             <Upload className="h-5 w-5" />
