@@ -25,6 +25,7 @@ export const COLLECTIONS = {
   SPEC_MEDIA: 'specMedia',
   PART_MASTER: 'partMaster',
   SUPPLIER_MASTER: 'supplierMaster',
+  MEAT_DICTIONARY: 'meatDictionary',
 } as const;
 
 // Generic CRUD helpers
@@ -207,6 +208,64 @@ export function parsePeakCode(code: string): {
 export function getBaseCode(peakCode: string): string {
   const match = peakCode.match(/^(\d-[CF][PBC]\d{2}\d{4})/);
   return match ? match[1] : peakCode;
+}
+
+// MeatDictionary functions
+import type { MeatCut, MeatType } from '@/lib/meat-cuts-data';
+
+export interface MeatCutDocument extends MeatCut {
+  id: string;
+  meatType: MeatType;
+  categoryKey: string;
+  createdAt?: Timestamp;
+  updatedAt?: Timestamp;
+}
+
+export async function getMeatCutOverrides(): Promise<MeatCutDocument[]> {
+  return getDocuments<MeatCutDocument>(
+    COLLECTIONS.MEAT_DICTIONARY,
+    orderBy('updatedAt', 'desc')
+  );
+}
+
+export async function saveMeatCutOverride(
+  meatType: MeatType,
+  categoryKey: string,
+  cutIndex: number,
+  cutData: MeatCut
+): Promise<string> {
+  const docId = `${meatType}_${categoryKey}_${cutIndex}`;
+  const docRef = doc(db, COLLECTIONS.MEAT_DICTIONARY, docId);
+  const docSnap = await getDoc(docRef);
+
+  if (docSnap.exists()) {
+    await updateDoc(docRef, {
+      ...cutData,
+      meatType,
+      categoryKey,
+      updatedAt: serverTimestamp(),
+    });
+    return docId;
+  } else {
+    const { setDoc } = await import('firebase/firestore');
+    await setDoc(docRef, {
+      ...cutData,
+      meatType,
+      categoryKey,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    });
+    return docId;
+  }
+}
+
+export async function deleteMeatCutOverride(
+  meatType: MeatType,
+  categoryKey: string,
+  cutIndex: number
+): Promise<void> {
+  const docId = `${meatType}_${categoryKey}_${cutIndex}`;
+  await deleteDocument(COLLECTIONS.MEAT_DICTIONARY, docId);
 }
 
 // Re-export Firestore utilities

@@ -1,14 +1,15 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { Link } from '@/i18n/navigation';
-import { Search, Home, Package, Book, ChevronDown, ChevronUp } from 'lucide-react';
+import { Search, Home, Package, ChevronDown, ChevronUp, Pencil } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import LanguageSwitcher from '@/components/layout/LanguageSwitcher';
+import MeatCutEditModal from '@/components/dictionary/MeatCutEditModal';
 import {
   meatDataMap,
   searchMeatCuts,
@@ -16,9 +17,41 @@ import {
   type MeatType,
   type MeatCut,
   type MeatCategory,
+  type MeatData,
 } from '@/lib/meat-cuts-data';
+import { getMeatCutOverrides, type MeatCutDocument } from '@/lib/firebase/firestore';
 
 type Locale = 'ko' | 'en' | 'th' | 'my';
+
+// 원본 데이터와 오버라이드를 병합
+function mergeWithOverrides(
+  meatData: MeatData,
+  overrides: MeatCutDocument[],
+  meatType: MeatType
+): MeatData {
+  const merged = JSON.parse(JSON.stringify(meatData)) as MeatData;
+
+  for (const override of overrides) {
+    if (override.meatType !== meatType) continue;
+
+    const category = merged.categories[override.categoryKey];
+    if (!category) continue;
+
+    // Find the cut index from the override id (format: meatType_categoryKey_index)
+    const parts = override.id.split('_');
+    const cutIndex = parseInt(parts[parts.length - 1], 10);
+
+    if (!isNaN(cutIndex) && cutIndex < category.cuts.length) {
+      // Merge override with existing cut data
+      category.cuts[cutIndex] = {
+        ...category.cuts[cutIndex],
+        ...override,
+      };
+    }
+  }
+
+  return merged;
+}
 
 export default function DictionaryPage() {
   const t = useTranslations();
@@ -27,11 +60,44 @@ export default function DictionaryPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
 
+  // Edit modal state
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editingCut, setEditingCut] = useState<{
+    cut: MeatCut;
+    categoryKey: string;
+    cutIndex: number;
+  } | null>(null);
+
+  // Firestore overrides
+  const [overrides, setOverrides] = useState<MeatCutDocument[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Load overrides from Firestore
+  const loadOverrides = useCallback(async () => {
+    try {
+      const data = await getMeatCutOverrides();
+      setOverrides(data);
+    } catch (error) {
+      console.error('Failed to load overrides:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadOverrides();
+  }, [loadOverrides]);
+
   // Check if current meat type is Halal (has Arabic names)
   const isHalal = activeTab === 'beef' || activeTab === 'chicken';
 
   const stats = getMeatStats();
-  const currentMeat = meatDataMap[activeTab];
+
+  // Merge original data with overrides
+  const currentMeat = useMemo(() => {
+    const originalMeat = meatDataMap[activeTab];
+    return mergeWithOverrides(originalMeat, overrides, activeTab);
+  }, [activeTab, overrides]);
 
   // 검색 결과 필터링
   const filteredCategories = useMemo(() => {
@@ -50,7 +116,11 @@ export default function DictionaryPage() {
           cuts: [],
         };
       }
-      filtered[categoryKey].cuts.push(result.cut);
+      // Find the merged cut data
+      const mergedCut = currentMeat.categories[categoryKey]?.cuts.find(
+        c => c.ko === result.cut.ko && c.en === result.cut.en
+      );
+      filtered[categoryKey].cuts.push(mergedCut || result.cut);
     }
 
     return filtered;
@@ -72,20 +142,6 @@ export default function DictionaryPage() {
     }));
   };
 
-  // 부위명 표시 (로케일에 따라)
-  const getCutName = (cut: MeatCut): string => {
-    switch (locale) {
-      case 'th':
-        return cut.th;
-      case 'my':
-        return cut.my || cut.en;
-      case 'en':
-        return cut.en;
-      default:
-        return cut.ko;
-    }
-  };
-
   // 카테고리명 표시
   const getCategoryName = (category: MeatCategory): string => {
     switch (locale) {
@@ -98,6 +154,24 @@ export default function DictionaryPage() {
       default:
         return category.name.ko;
     }
+  };
+
+  // Edit handlers
+  const handleEditClick = (cut: MeatCut, categoryKey: string, cutIndex: number) => {
+    setEditingCut({ cut, categoryKey, cutIndex });
+    setEditModalOpen(true);
+  };
+
+  const handleSave = (updatedCut: MeatCut) => {
+    // Reload overrides to get the latest data
+    loadOverrides();
+  };
+
+  // Find original cut index (considering search filtering might change order)
+  const getOriginalCutIndex = (categoryKey: string, cut: MeatCut): number => {
+    const originalCategory = meatDataMap[activeTab].categories[categoryKey];
+    if (!originalCategory) return -1;
+    return originalCategory.cuts.findIndex(c => c.ko === cut.ko && c.en === cut.en);
   };
 
   return (
@@ -199,6 +273,13 @@ export default function DictionaryPage() {
           )}
         </div>
 
+        {/* Loading indicator */}
+        {isLoading && (
+          <div className="text-center py-4 text-gray-500">
+            Loading...
+          </div>
+        )}
+
         {/* Categories */}
         <div className="space-y-3">
           {Object.entries(filteredCategories).map(([categoryKey, category]) => (
@@ -224,6 +305,7 @@ export default function DictionaryPage() {
                   <table className="w-full text-sm">
                     <thead className="bg-gray-100">
                       <tr>
+                        <th className="p-2 text-left font-medium text-gray-700 w-10"></th>
                         <th className="p-2 text-left font-medium text-gray-700 min-w-20">
                           {t('dictionary.korean')}
                         </th>
@@ -253,33 +335,46 @@ export default function DictionaryPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {category.cuts.map((cut, idx) => (
-                        <tr key={idx} className="border-t border-gray-100 hover:bg-yellow-50">
-                          <td className="p-2 font-medium text-gray-900">{cut.ko}</td>
-                          <td className="p-2 text-gray-700">{cut.en}</td>
-                          <td className="p-2 text-gray-700">{cut.th}</td>
-                          {isHalal && (
-                            <td className="p-2 text-gray-700">
-                              <div className="text-right" dir="rtl">{cut.ar || '-'}</div>
-                              {cut.arKo && <div className="text-xs text-gray-500 mt-0.5">{cut.arKo}</div>}
+                      {category.cuts.map((cut, idx) => {
+                        const originalIndex = getOriginalCutIndex(categoryKey, cut);
+                        return (
+                          <tr key={idx} className="border-t border-gray-100 hover:bg-yellow-50 group">
+                            <td className="p-2">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                                onClick={() => handleEditClick(cut, categoryKey, originalIndex)}
+                              >
+                                <Pencil className="h-3.5 w-3.5 text-gray-500" />
+                              </Button>
                             </td>
-                          )}
-                          <td className="p-2 text-blue-600 text-xs">{cut.us}</td>
-                          <td className="p-2">
-                            {cut.peakCode && (
-                              <Link href={`/products?search=${cut.peakCode}`}>
-                                <Badge
-                                  variant="outline"
-                                  className="cursor-pointer hover:bg-blue-50"
-                                >
-                                  {cut.peakCode}
-                                </Badge>
-                              </Link>
+                            <td className="p-2 font-medium text-gray-900">{cut.ko}</td>
+                            <td className="p-2 text-gray-700">{cut.en}</td>
+                            <td className="p-2 text-gray-700">{cut.th}</td>
+                            {isHalal && (
+                              <td className="p-2 text-gray-700">
+                                <div className="text-right" dir="rtl">{cut.ar || '-'}</div>
+                                {cut.arKo && <div className="text-xs text-gray-500 mt-0.5">{cut.arKo}</div>}
+                              </td>
                             )}
-                          </td>
-                          <td className="p-2 text-orange-600 text-xs">{cut.note}</td>
-                        </tr>
-                      ))}
+                            <td className="p-2 text-blue-600 text-xs">{cut.us}</td>
+                            <td className="p-2">
+                              {cut.peakCode && (
+                                <Link href={`/products?search=${cut.peakCode}`}>
+                                  <Badge
+                                    variant="outline"
+                                    className="cursor-pointer hover:bg-blue-50"
+                                  >
+                                    {cut.peakCode}
+                                  </Badge>
+                                </Link>
+                              )}
+                            </td>
+                            <td className="p-2 text-orange-600 text-xs">{cut.note}</td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
@@ -345,9 +440,26 @@ export default function DictionaryPage() {
 
         {/* Footer */}
         <div className="mt-4 text-center text-xs text-gray-500 pb-4">
-          Meet365 {t('dictionary.title')} v1.0 | {t('dictionary.integrated')}
+          Meet365 {t('dictionary.title')} v1.1 | {t('dictionary.integrated')}
         </div>
       </div>
+
+      {/* Edit Modal */}
+      {editingCut && (
+        <MeatCutEditModal
+          isOpen={editModalOpen}
+          onClose={() => {
+            setEditModalOpen(false);
+            setEditingCut(null);
+          }}
+          cut={editingCut.cut}
+          meatType={activeTab}
+          categoryKey={editingCut.categoryKey}
+          cutIndex={editingCut.cutIndex}
+          isHalal={isHalal}
+          onSave={handleSave}
+        />
+      )}
     </div>
   );
 }
